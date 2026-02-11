@@ -10,11 +10,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.guillermo.healthcare.ui.navigation.Screen
+import com.guillermo.healthcare.ui.navigation.Pantalla
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MedicationListScreen(navController: NavController) {
+fun PantallaListaMedicamentos(navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -28,7 +28,7 @@ fun MedicationListScreen(navController: NavController) {
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { navController.navigate(Screen.MedicationForm.createRoute()) }
+                onClick = { navController.navigate(Pantalla.FormularioMedicamento.crearRuta()) }
             ) {
                 Icon(Icons.Default.Add, "Añadir")
             }

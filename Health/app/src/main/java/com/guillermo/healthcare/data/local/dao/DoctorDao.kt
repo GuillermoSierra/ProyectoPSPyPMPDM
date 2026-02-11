@@ -8,20 +8,20 @@ import kotlinx.coroutines.flow.Flow
 interface DoctorDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(doctor: Doctor)
+    suspend fun insertar(doctor: Doctor)
 
     @Update
-    suspend fun update(doctor: Doctor)
+    suspend fun actualizar(doctor: Doctor)
 
     @Delete
-    suspend fun delete(doctor: Doctor)
+    suspend fun eliminar(doctor: Doctor)
 
-    @Query("SELECT * FROM doctors ORDER BY name ASC")
-    fun getAllDoctors(): Flow<List<Doctor>>
+    @Query("SELECT * FROM doctores ORDER BY nombre ASC")
+    fun obtenerTodosDoctores(): Flow<List<Doctor>>
 
-    @Query("SELECT * FROM doctors WHERE id = :id")
-    fun getDoctorById(id: Int): Flow<Doctor?>
+    @Query("SELECT * FROM doctores WHERE id = :id")
+    fun obtenerDoctorPorId(id: Int): Flow<Doctor?>
 
-    @Query("SELECT * FROM doctors WHERE name LIKE '%' || :searchQuery || '%' OR specialty LIKE '%' || :searchQuery || '%'")
-    fun searchDoctors(searchQuery: String): Flow<List<Doctor>>
+    @Query("SELECT * FROM doctores WHERE nombre LIKE '%' || :busqueda || '%' OR especialidad LIKE '%' || :busqueda || '%'")
+    fun buscarDoctores(busqueda: String): Flow<List<Doctor>>
 }

@@ -12,16 +12,14 @@ import androidx.navigation.NavController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MedicationFormScreen(
-    medicationId: Int?,
+fun PantallaDetalleMedicamento(
+    medicamentoId: Int,
     navController: NavController
 ) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = {
-                    Text(if (medicationId == null) "Nuevo Medicamento" else "Editar Medicamento")
-                },
+                title = { Text("Detalle Medicamento") },
                 navigationIcon = {
                     IconButton(onClick = { navController.navigateUp() }) {
                         Icon(Icons.Default.ArrowBack, "Volver")
@@ -38,10 +36,7 @@ fun MedicationFormScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Text(
-                if (medicationId == null) "Formulario para crear medicamento"
-                else "Formulario para editar medicamento ID: $medicationId"
-            )
+            Text("Detalle del medicamento ID: $medicamentoId")
         }
     }
 }

@@ -5,11 +5,11 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
-import com.guillermo.healthcare.ui.navigation.NavGraph
+import com.guillermo.healthcare.ui.navigation.GrafoNavegacion
+import com.guillermo.healthcare.ui.navigation.Pantalla
 import com.guillermo.healthcare.ui.theme.HealthCareTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -23,9 +23,9 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
 
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    NavGraph(
+                    GrafoNavegacion(
                         navController = navController,
-                        startDestination = com.guillermo.healthcare.ui.navigation.Screen.Home.route
+                        destinoInicial = Pantalla.Inicio.ruta
                     )
                 }
             }

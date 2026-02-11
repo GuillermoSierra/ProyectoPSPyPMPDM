@@ -1,21 +1,32 @@
 package com.guillermo.healthcare.ui.screens
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.guillermo.healthcare.ui.navigation.Screen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(navController: NavController) {
+fun PantallaFormularioMedicamento(
+    medicamentoId: Int?,
+    navController: NavController
+) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("HealthCare") }
+                title = {
+                    Text(if (medicamentoId == null) "Nuevo Medicamento" else "Editar Medicamento")
+                },
+                navigationIcon = {
+                    IconButton(onClick = { navController.navigateUp() }) {
+                        Icon(Icons.Default.ArrowBack, "Volver")
+                    }
+                }
             )
         }
     ) { paddingValues ->
@@ -28,18 +39,9 @@ fun HomeScreen(navController: NavController) {
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = "Bienvenido a HealthCare",
-                style = MaterialTheme.typography.headlineMedium
+                if (medicamentoId == null) "Formulario para crear medicamento"
+                else "Formulario para editar medicamento ID: $medicamentoId"
             )
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            Button(
-                onClick = { navController.navigate(Screen.MedicationList.route) },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Ver Medicamentos")
-            }
         }
     }
 }
