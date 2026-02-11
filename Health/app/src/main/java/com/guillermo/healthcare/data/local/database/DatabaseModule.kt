@@ -1,4 +1,4 @@
-package com.guillermo.healthcare.di
+package com.guillermo.healthcare.data.local.database
 
 import android.content.Context
 import androidx.room.Room
@@ -6,7 +6,6 @@ import com.guillermo.healthcare.data.local.dao.AppointmentDao
 import com.guillermo.healthcare.data.local.dao.DoctorDao
 import com.guillermo.healthcare.data.local.dao.MedicationDao
 import com.guillermo.healthcare.data.local.dao.SymptomDao
-import com.guillermo.healthcare.data.local.database.HealthCareDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
