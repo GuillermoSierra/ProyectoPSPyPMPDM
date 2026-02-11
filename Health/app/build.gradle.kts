@@ -87,7 +87,7 @@ dependencies {
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
 
     // Auth0
-    implementation("com.auth0.android:auth0:2.10.2")
+    // implementation("com.auth0.android:auth0:2.10.2")
 
     // Hilt
     implementation("com.google.dagger:hilt-android:2.48")
