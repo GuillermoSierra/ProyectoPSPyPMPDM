@@ -1,4 +1,4 @@
-package com.guillermo.healthcare.ui.screens
+package com.guillermo.healthcare.ui.screens.medicamentos
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -10,7 +10,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.guillermo.healthcare.data.local.entity.Medicamento
-import com.guillermo.healthcare.ui.viewmodel.ViewModelMedicamento
+import com.guillermo.healthcare.ui.screens.medicamentos.ViewModelMedicamento
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

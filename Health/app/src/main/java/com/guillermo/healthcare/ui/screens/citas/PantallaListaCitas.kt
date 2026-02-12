@@ -1,4 +1,4 @@
-package com.guillermo.healthcare.ui.screens
+package com.guillermo.healthcare.ui.screens.citas
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -18,22 +18,22 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.guillermo.healthcare.data.local.entity.Medicamento
+import com.guillermo.healthcare.data.local.entity.Cita
 import com.guillermo.healthcare.ui.navigation.Pantalla
-import com.guillermo.healthcare.ui.viewmodel.ViewModelMedicamento
+import com.guillermo.healthcare.ui.screens.citas.ViewModelCita
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PantallaListaMedicamentos(
+fun PantallaListaCitas(
     navController: NavController,
-    viewModel: ViewModelMedicamento = hiltViewModel()
+    viewModel: ViewModelCita = hiltViewModel()
 ) {
-    val medicamentos by viewModel.medicamentos.collectAsState()
+    val citas by viewModel.citas.collectAsState()
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Medicamentos") },
+                title = { Text("Citas Médicas") },
                 navigationIcon = {
                     IconButton(onClick = { navController.navigateUp() }) {
                         Icon(Icons.Default.ArrowBack, "Volver")
@@ -43,40 +43,31 @@ fun PantallaListaMedicamentos(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { navController.navigate(Pantalla.FormularioMedicamento.crearRuta()) }
+                onClick = { navController.navigate(Pantalla.FormularioCita.crearRuta()) }
             ) {
                 Icon(Icons.Default.Add, "Añadir")
             }
         }
     ) { paddingValues ->
-        if (medicamentos.isEmpty()) {
+        if (citas.isEmpty()) {
             Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues),
+                modifier = Modifier.fillMaxSize().padding(paddingValues),
                 contentAlignment = Alignment.Center
             ) {
-                Text("No hay medicamentos. ¡Añade uno!")
+                Text("No hay citas. ¡Añade una!")
             }
         } else {
             LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .padding(16.dp),
+                modifier = Modifier.fillMaxSize().padding(paddingValues).padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(medicamentos) { medicamento ->
-                    TarjetaMedicamento(
-                        medicamento = medicamento,
+                items(citas) { cita ->
+                    TarjetaCita(
+                        cita = cita,
                         onClickItem = {
-                            navController.navigate(
-                                Pantalla.DetalleMedicamento.crearRuta(medicamento.id)
-                            )
+                            navController.navigate(Pantalla.DetalleCita.crearRuta(cita.id))
                         },
-                        onClickEliminar = {
-                            viewModel.eliminarMedicamento(medicamento)
-                        }
+                        onClickEliminar = { viewModel.eliminarCita(cita) }
                     )
                 }
             }
@@ -84,51 +75,46 @@ fun PantallaListaMedicamentos(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TarjetaMedicamento(
-    medicamento: Medicamento,
+fun TarjetaCita(
+    cita: Cita,
     onClickItem: () -> Unit,
     onClickEliminar: () -> Unit
 ) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClickItem() },
+        modifier = Modifier.fillMaxWidth().clickable { onClickItem() },
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
+            modifier = Modifier.fillMaxWidth().padding(16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = medicamento.nombre,
+                    text = cita.nombreDoctor,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "Dosis: ${medicamento.dosis}",
+                    text = "Especialidad: ${cita.especialidad}",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
-                    text = "Frecuencia: ${medicamento.frecuencia}",
+                    text = "${cita.fecha} a las ${cita.hora}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Text(
+                    text = "${cita.lugar}",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
-
             IconButton(onClick = onClickEliminar) {
-                Icon(
-                    Icons.Default.Delete,
-                    contentDescription = "Eliminar",
-                    tint = MaterialTheme.colorScheme.error
-                )
+                Icon(Icons.Default.Delete, "Eliminar", tint = MaterialTheme.colorScheme.error)
             }
         }
     }

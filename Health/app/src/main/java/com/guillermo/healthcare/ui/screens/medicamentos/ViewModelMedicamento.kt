@@ -1,4 +1,4 @@
-package com.guillermo.healthcare.ui.viewmodel
+package com.guillermo.healthcare.ui.screens.medicamentos
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
