@@ -9,15 +9,15 @@ data class RespuestaOpenFDA(
 
 data class MedicamentoDto(
     @SerializedName("brand_name")
-    val nombreMarca: List<String>?,
+    val nombreMarca: String?,
     @SerializedName("generic_name")
-    val nombreGenerico: List<String>?,
-    @SerializedName("manufacturer_name")
-    val fabricante: List<String>?,
+    val nombreGenerico: String?,
+    @SerializedName("labeler_name")
+    val fabricante: String?,
     @SerializedName("route")
-    val via: List<String>?,
+    val via: Any?,
     @SerializedName("dosage_form")
-    val formaDosis: List<String>?
+    val formaDosis: Any?
 )
 
 data class RespuestaEtiqueta(
@@ -27,11 +27,20 @@ data class RespuestaEtiqueta(
 
 data class EtiquetaDto(
     @SerializedName("openfda")
-    val openFda: MedicamentoDto?,
+    val openFda: OpenFdaDto?,
     @SerializedName("purpose")
     val proposito: List<String>?,
     @SerializedName("warnings")
     val advertencias: List<String>?,
     @SerializedName("dosage_and_administration")
     val dosisAdministracion: List<String>?
+)
+
+data class OpenFdaDto(
+    @SerializedName("brand_name")
+    val nombreMarca: List<String>?,
+    @SerializedName("generic_name")
+    val nombreGenerico: List<String>?,
+    @SerializedName("manufacturer_name")
+    val fabricante: List<String>?
 )

@@ -148,6 +148,13 @@ fun PantallaInicio(
                 descripcion = "Gestiona tus contactos médicos",
                 onClick = { navController.navigate(Pantalla.ListaDoctores.ruta) }
             )
+
+            BotonNavegacion(
+                icono = Icons.Default.Search,
+                titulo = "Buscar Medicamentos",
+                descripcion = "Busca información de medicamentos en OpenFDA",
+                onClick = { navController.navigate(Pantalla.Busqueda.ruta) }
+            )
         }
     }
 }

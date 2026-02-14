@@ -19,6 +19,7 @@ import com.guillermo.healthcare.ui.screens.sintomas.PantallaFormularioSintoma
 import com.guillermo.healthcare.ui.screens.doctores.PantallaListaDoctores
 import com.guillermo.healthcare.ui.screens.doctores.PantallaDetalleDoctor
 import com.guillermo.healthcare.ui.screens.doctores.PantallaFormularioDoctor
+import com.guillermo.healthcare.ui.screens.busqueda.PantallaBusqueda
 
 @Composable
 fun GrafoNavegacion(
@@ -132,6 +133,9 @@ fun GrafoNavegacion(
                 doctorId = if (id == -1) null else id,
                 navController = navController
             )
+        }
+        composable(route = Pantalla.Busqueda.ruta) {
+            PantallaBusqueda(navController = navController)
         }
     }
 }

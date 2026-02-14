@@ -46,4 +46,6 @@ sealed class Pantalla(val ruta: String) {
             if (doctorId != null) "formulario_doctor?doctorId=$doctorId"
             else "formulario_doctor"
     }
+
+    object Busqueda : Pantalla("busqueda")
 }
