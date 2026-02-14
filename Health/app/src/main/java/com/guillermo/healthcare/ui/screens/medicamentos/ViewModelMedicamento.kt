@@ -3,7 +3,7 @@ package com.guillermo.healthcare.ui.screens.medicamentos
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.guillermo.healthcare.data.local.entity.Medicamento
-import com.guillermo.healthcare.data.repository.RepositorioMedicamento
+import com.guillermo.healthcare.domain.usecase.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,7 +13,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ViewModelMedicamento @Inject constructor(
-    private val repositorio: RepositorioMedicamento
+    private val obtenerMedicamentos: ObtenerMedicamentosUseCase,
+    private val obtenerMedicamentoPorId: ObtenerMedicamentoPorIdUseCase,
+    private val insertarMedicamento: InsertarMedicamentoUseCase,
+    private val actualizarMedicamento: ActualizarMedicamentoUseCase,
+    private val eliminarMedicamento: EliminarMedicamentoUseCase
 ) : ViewModel() {
 
     private val _medicamentos = MutableStateFlow<List<Medicamento>>(emptyList())
@@ -31,7 +35,7 @@ class ViewModelMedicamento @Inject constructor(
 
     private fun cargarMedicamentos() {
         viewModelScope.launch {
-            repositorio.obtenerTodosMedicamentos().collect { lista ->
+            obtenerMedicamentos().collect { lista ->
                 _medicamentos.value = lista
             }
         }
@@ -39,7 +43,7 @@ class ViewModelMedicamento @Inject constructor(
 
     fun cargarMedicamentoPorId(id: Int) {
         viewModelScope.launch {
-            repositorio.obtenerMedicamentoPorId(id).collect { medicamento ->
+            obtenerMedicamentoPorId(id).collect { medicamento ->
                 _medicamentoSeleccionado.value = medicamento
             }
         }
@@ -48,7 +52,7 @@ class ViewModelMedicamento @Inject constructor(
     fun insertarMedicamento(medicamento: Medicamento) {
         viewModelScope.launch {
             _cargando.value = true
-            repositorio.insertarMedicamento(medicamento)
+            insertarMedicamento.invoke(medicamento)
             _cargando.value = false
         }
     }
@@ -56,7 +60,7 @@ class ViewModelMedicamento @Inject constructor(
     fun actualizarMedicamento(medicamento: Medicamento) {
         viewModelScope.launch {
             _cargando.value = true
-            repositorio.actualizarMedicamento(medicamento)
+            actualizarMedicamento.invoke(medicamento)
             _cargando.value = false
         }
     }
@@ -64,16 +68,8 @@ class ViewModelMedicamento @Inject constructor(
     fun eliminarMedicamento(medicamento: Medicamento) {
         viewModelScope.launch {
             _cargando.value = true
-            repositorio.eliminarMedicamento(medicamento)
+            eliminarMedicamento.invoke(medicamento)
             _cargando.value = false
-        }
-    }
-
-    fun buscarMedicamentos(consulta: String) {
-        viewModelScope.launch {
-            repositorio.buscarMedicamentos(consulta).collect { lista ->
-                _medicamentos.value = lista
-            }
         }
     }
 }

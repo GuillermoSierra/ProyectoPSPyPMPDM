@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.guillermo.healthcare.data.local.entity.Sintoma
 import com.guillermo.healthcare.data.repository.RepositorioSintoma
+import com.guillermo.healthcare.domain.usecase.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,6 +14,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ViewModelSintoma @Inject constructor(
+    private val obtenerSintomas: ObtenerSintomasUseCase,
+    private val insertarSintoma: InsertarSintomaUseCase,
+    private val actualizarSintoma: ActualizarSintomaUseCase,
+    private val eliminarSintoma: EliminarSintomaUseCase,
     private val repositorio: RepositorioSintoma
 ) : ViewModel() {
 
@@ -31,7 +36,7 @@ class ViewModelSintoma @Inject constructor(
 
     private fun cargarSintomas() {
         viewModelScope.launch {
-            repositorio.obtenerTodosSintomas().collect { lista ->
+            obtenerSintomas().collect { lista ->
                 _sintomas.value = lista
             }
         }
@@ -48,7 +53,7 @@ class ViewModelSintoma @Inject constructor(
     fun insertarSintoma(sintoma: Sintoma) {
         viewModelScope.launch {
             _cargando.value = true
-            repositorio.insertarSintoma(sintoma)
+            insertarSintoma.invoke(sintoma)
             _cargando.value = false
         }
     }
@@ -56,7 +61,7 @@ class ViewModelSintoma @Inject constructor(
     fun actualizarSintoma(sintoma: Sintoma) {
         viewModelScope.launch {
             _cargando.value = true
-            repositorio.actualizarSintoma(sintoma)
+            actualizarSintoma.invoke(sintoma)
             _cargando.value = false
         }
     }
@@ -64,7 +69,7 @@ class ViewModelSintoma @Inject constructor(
     fun eliminarSintoma(sintoma: Sintoma) {
         viewModelScope.launch {
             _cargando.value = true
-            repositorio.eliminarSintoma(sintoma)
+            eliminarSintoma.invoke(sintoma)
             _cargando.value = false
         }
     }

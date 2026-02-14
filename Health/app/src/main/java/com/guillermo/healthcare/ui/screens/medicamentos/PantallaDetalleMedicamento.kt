@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.guillermo.healthcare.ui.navigation.Pantalla
-import com.guillermo.healthcare.ui.screens.medicamentos.ViewModelMedicamento
+import com.guillermo.healthcare.ui.components.FilaDetalle
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -171,21 +171,5 @@ fun PantallaDetalleMedicamento(
                 }
             }
         }
-    }
-}
-
-@Composable
-fun FilaDetalle(etiqueta: String, valor: String) {
-    Column {
-        Text(
-            text = etiqueta,
-            style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        Spacer(modifier = Modifier.height(2.dp))
-        Text(
-            text = valor,
-            style = MaterialTheme.typography.bodyLarge
-        )
     }
 }

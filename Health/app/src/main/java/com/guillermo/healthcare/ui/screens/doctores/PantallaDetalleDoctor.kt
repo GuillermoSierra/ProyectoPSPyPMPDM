@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.guillermo.healthcare.ui.navigation.Pantalla
-import com.guillermo.healthcare.ui.screens.medicamentos.FilaDetalle
+import com.guillermo.healthcare.ui.components.FilaDetalle
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -71,9 +71,9 @@ fun PantallaDetalleDoctor(
                         Divider()
                         FilaDetalle("Especialidad", doctor!!.especialidad)
                         FilaDetalle("Teléfono", doctor!!.telefono)
-                        doctor!!.email?.let { FilaDetalle("✉️ Email", it) }
+                        doctor!!.email?.let { FilaDetalle("✉Email", it) }
                         FilaDetalle("Dirección", doctor!!.direccion)
-                        doctor!!.notas?.let { Divider(); FilaDetalle("📝 Notas", it) }
+                        doctor!!.notas?.let { Divider(); FilaDetalle("Notas", it) }
                     }
                 }
                 Button(onClick = { navController.navigate(Pantalla.FormularioDoctor.crearRuta(doctorId)) }, modifier = Modifier.fillMaxWidth()) {

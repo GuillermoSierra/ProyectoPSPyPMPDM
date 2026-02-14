@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.guillermo.healthcare.data.local.entity.Doctor
 import com.guillermo.healthcare.data.repository.RepositorioDoctor
+import com.guillermo.healthcare.domain.usecase.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,6 +14,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ViewModelDoctor @Inject constructor(
+    private val obtenerDoctores: ObtenerDoctoresUseCase,
+    private val insertarDoctor: InsertarDoctorUseCase,
+    private val actualizarDoctor: ActualizarDoctorUseCase,
+    private val eliminarDoctor: EliminarDoctorUseCase,
     private val repositorio: RepositorioDoctor
 ) : ViewModel() {
 
@@ -31,7 +36,7 @@ class ViewModelDoctor @Inject constructor(
 
     private fun cargarDoctores() {
         viewModelScope.launch {
-            repositorio.obtenerTodosDoctores().collect { lista ->
+            obtenerDoctores().collect { lista ->
                 _doctores.value = lista
             }
         }
@@ -48,7 +53,7 @@ class ViewModelDoctor @Inject constructor(
     fun insertarDoctor(doctor: Doctor) {
         viewModelScope.launch {
             _cargando.value = true
-            repositorio.insertarDoctor(doctor)
+            insertarDoctor.invoke(doctor)
             _cargando.value = false
         }
     }
@@ -56,7 +61,7 @@ class ViewModelDoctor @Inject constructor(
     fun actualizarDoctor(doctor: Doctor) {
         viewModelScope.launch {
             _cargando.value = true
-            repositorio.actualizarDoctor(doctor)
+            actualizarDoctor.invoke(doctor)
             _cargando.value = false
         }
     }
@@ -64,7 +69,7 @@ class ViewModelDoctor @Inject constructor(
     fun eliminarDoctor(doctor: Doctor) {
         viewModelScope.launch {
             _cargando.value = true
-            repositorio.eliminarDoctor(doctor)
+            eliminarDoctor.invoke(doctor)
             _cargando.value = false
         }
     }

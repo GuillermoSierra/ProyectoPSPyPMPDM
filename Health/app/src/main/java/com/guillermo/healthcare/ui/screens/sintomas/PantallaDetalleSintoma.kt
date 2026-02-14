@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.guillermo.healthcare.ui.navigation.Pantalla
-import com.guillermo.healthcare.ui.screens.medicamentos.FilaDetalle
+import com.guillermo.healthcare.ui.components.FilaDetalle
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -91,10 +91,10 @@ fun PantallaDetalleSintoma(
                     ) {
                         Text(sintomaActual.nombre, style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
                         Divider()
-                        FilaDetalle("🌡️ Intensidad", "${sintomaActual.intensidad}/10")
-                        FilaDetalle("📅 Fecha", sintomaActual.fecha)
-                        FilaDetalle("🕐 Hora", sintomaActual.hora)
-                        sintomaActual.descripcion?.let { FilaDetalle("📝 Descripción", it) }
+                        FilaDetalle("🌡Intensidad", "${sintomaActual.intensidad}/10")
+                        FilaDetalle("Fecha", sintomaActual.fecha)
+                        FilaDetalle("Hora", sintomaActual.hora)
+                        sintomaActual.descripcion?.let { FilaDetalle("Descripción", it) }
                         sintomaActual.desencadenantes?.let { FilaDetalle("⚡ Desencadenantes", it) }
                     }
                 }

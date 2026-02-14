@@ -14,8 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.guillermo.healthcare.ui.navigation.Pantalla
-import com.guillermo.healthcare.ui.screens.medicamentos.FilaDetalle
-import com.guillermo.healthcare.ui.screens.citas.ViewModelCita
+import com.guillermo.healthcare.ui.components.FilaDetalle
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

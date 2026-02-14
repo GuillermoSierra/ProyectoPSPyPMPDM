@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.guillermo.healthcare.data.local.entity.Cita
 import com.guillermo.healthcare.data.repository.RepositorioCita
+import com.guillermo.healthcare.domain.usecase.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,6 +14,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ViewModelCita @Inject constructor(
+    private val obtenerCitas: ObtenerCitasUseCase,
+    private val insertarCita: InsertarCitaUseCase,
+    private val actualizarCita: ActualizarCitaUseCase,
+    private val eliminarCita: EliminarCitaUseCase,
     private val repositorio: RepositorioCita
 ) : ViewModel() {
 
@@ -31,7 +36,7 @@ class ViewModelCita @Inject constructor(
 
     private fun cargarCitas() {
         viewModelScope.launch {
-            repositorio.obtenerTodasCitas().collect { lista ->
+            obtenerCitas().collect { lista ->
                 _citas.value = lista
             }
         }
@@ -48,7 +53,7 @@ class ViewModelCita @Inject constructor(
     fun insertarCita(cita: Cita) {
         viewModelScope.launch {
             _cargando.value = true
-            repositorio.insertarCita(cita)
+            insertarCita.invoke(cita)
             _cargando.value = false
         }
     }
@@ -56,7 +61,7 @@ class ViewModelCita @Inject constructor(
     fun actualizarCita(cita: Cita) {
         viewModelScope.launch {
             _cargando.value = true
-            repositorio.actualizarCita(cita)
+            actualizarCita.invoke(cita)
             _cargando.value = false
         }
     }
@@ -64,7 +69,7 @@ class ViewModelCita @Inject constructor(
     fun eliminarCita(cita: Cita) {
         viewModelScope.launch {
             _cargando.value = true
-            repositorio.eliminarCita(cita)
+            eliminarCita.invoke(cita)
             _cargando.value = false
         }
     }
