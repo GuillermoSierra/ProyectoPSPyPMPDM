@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -20,6 +21,7 @@ import androidx.navigation.NavController
 import com.guillermo.healthcare.ui.navigation.Pantalla
 import com.guillermo.healthcare.ui.screens.citas.ViewModelCita
 import com.guillermo.healthcare.ui.screens.doctores.ViewModelDoctor
+import com.guillermo.healthcare.ui.screens.login.ViewModelAuth
 import com.guillermo.healthcare.ui.screens.medicamentos.ViewModelMedicamento
 import com.guillermo.healthcare.ui.screens.sintomas.ViewModelSintoma
 
@@ -27,11 +29,13 @@ import com.guillermo.healthcare.ui.screens.sintomas.ViewModelSintoma
 @Composable
 fun PantallaInicio(
     navController: NavController,
+    viewModelAuth: ViewModelAuth = hiltViewModel(),
     viewModelMedicamento: ViewModelMedicamento = hiltViewModel(),
     viewModelCita: ViewModelCita = hiltViewModel(),
     viewModelSintoma: ViewModelSintoma = hiltViewModel(),
     viewModelDoctor: ViewModelDoctor = hiltViewModel()
 ) {
+    val contexto = LocalContext.current
     val medicamentos by viewModelMedicamento.medicamentos.collectAsState()
     val citas by viewModelCita.citas.collectAsState()
     val sintomas by viewModelSintoma.sintomas.collectAsState()
@@ -44,7 +48,23 @@ fun PantallaInicio(
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     titleContentColor = MaterialTheme.colorScheme.onPrimary
-                )
+                ),
+                actions = {
+                    IconButton(
+                        onClick = {
+                            viewModelAuth.cerrarSesion(contexto)
+                            navController.navigate(Pantalla.Login.ruta) {
+                                popUpTo(0) { inclusive = true }
+                            }
+                        }
+                    ) {
+                        Icon(
+                            Icons.Default.Logout,
+                            contentDescription = "Cerrar sesión",
+                            tint = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
+                }
             )
         }
     ) { paddingValues ->
@@ -120,7 +140,6 @@ fun PantallaInicio(
                 fontWeight = FontWeight.Bold
             )
 
-            // Botones de navegación
             BotonNavegacion(
                 icono = Icons.Default.Medication,
                 titulo = "Medicamentos",

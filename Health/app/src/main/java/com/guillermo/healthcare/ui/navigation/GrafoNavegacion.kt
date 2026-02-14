@@ -6,6 +6,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.guillermo.healthcare.ui.screens.login.PantallaLogin
 import com.guillermo.healthcare.ui.screens.inicio.PantallaInicio
 import com.guillermo.healthcare.ui.screens.medicamentos.PantallaListaMedicamentos
 import com.guillermo.healthcare.ui.screens.medicamentos.PantallaDetalleMedicamento
@@ -24,12 +25,17 @@ import com.guillermo.healthcare.ui.screens.busqueda.PantallaBusqueda
 @Composable
 fun GrafoNavegacion(
     navController: NavHostController,
-    destinoInicial: String = Pantalla.Inicio.ruta
+    destinoInicial: String = Pantalla.Login.ruta
 ) {
     NavHost(
         navController = navController,
         startDestination = destinoInicial
     ) {
+        // Login
+        composable(route = Pantalla.Login.ruta) {
+            PantallaLogin(navController = navController)
+        }
+
         // Inicio
         composable(route = Pantalla.Inicio.ruta) {
             PantallaInicio(navController = navController)

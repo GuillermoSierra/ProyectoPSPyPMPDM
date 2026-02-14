@@ -1,6 +1,9 @@
 package com.guillermo.healthcare.ui.navigation
 
 sealed class Pantalla(val ruta: String) {
+
+    // Login
+    object Login : Pantalla("login")
     object Inicio : Pantalla("inicio")
 
     // Medicamentos
