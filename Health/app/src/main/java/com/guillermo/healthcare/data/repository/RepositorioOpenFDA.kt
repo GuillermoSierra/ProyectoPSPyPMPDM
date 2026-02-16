@@ -17,16 +17,23 @@ class RepositorioOpenFDA @Inject constructor(
     suspend fun buscarMedicamentos(consulta: String): ResultadoApi<List<MedicamentoDto>> {
         return try {
             val respuesta = cliente.api.buscarMedicamentos("brand_name:$consulta")
-            if (respuesta.resultados != null) {
+            if (respuesta.resultados != null && respuesta.resultados.isNotEmpty()) {
                 ResultadoApi.Exito(respuesta.resultados)
             } else {
-                ResultadoApi.Error("No se encontraron resultados")
+                ResultadoApi.Error("No se encontraron resultados para '$consulta'")
+            }
+        } catch (e: retrofit2.HttpException) {
+            if (e.code() == 404) {
+                ResultadoApi.Error("No se encontraron resultados para '$consulta'")
+            } else {
+                ResultadoApi.Error("Error del servidor: ${e.code()}")
             }
         } catch (e: Exception) {
             ResultadoApi.Error("Error de conexión: ${e.message}")
         }
     }
 
+    // Endpoint disponible para obtener información detallada por nombre de medicamento
     suspend fun obtenerEtiquetaMedicamento(nombre: String): ResultadoApi<List<EtiquetaDto>> {
         return try {
             val respuesta = cliente.api.obtenerEtiquetaMedicamento("openfda.brand_name:$nombre")
