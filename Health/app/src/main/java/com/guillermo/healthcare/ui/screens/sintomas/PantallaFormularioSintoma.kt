@@ -21,7 +21,7 @@ fun PantallaFormularioSintoma(
     viewModel: ViewModelSintoma = hiltViewModel()
 ) {
     var nombre by remember { mutableStateOf("") }
-    var intensidad by remember { mutableStateOf("5") }
+    var intensidad by remember { mutableStateOf("") }
     var fecha by remember { mutableStateOf("") }
     var hora by remember { mutableStateOf("") }
     var descripcion by remember { mutableStateOf("") }

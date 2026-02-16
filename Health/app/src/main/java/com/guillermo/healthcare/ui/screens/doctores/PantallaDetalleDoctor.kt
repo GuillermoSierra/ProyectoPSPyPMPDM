@@ -71,7 +71,7 @@ fun PantallaDetalleDoctor(
                         Divider()
                         FilaDetalle("Especialidad", doctor!!.especialidad)
                         FilaDetalle("Teléfono", doctor!!.telefono)
-                        doctor!!.email?.let { FilaDetalle("✉Email", it) }
+                        doctor!!.email?.let { FilaDetalle("Email", it) }
                         FilaDetalle("Dirección", doctor!!.direccion)
                         doctor!!.notas?.let { Divider(); FilaDetalle("Notas", it) }
                     }

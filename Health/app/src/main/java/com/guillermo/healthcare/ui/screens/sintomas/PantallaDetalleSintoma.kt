@@ -91,11 +91,11 @@ fun PantallaDetalleSintoma(
                     ) {
                         Text(sintomaActual.nombre, style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
                         Divider()
-                        FilaDetalle("🌡Intensidad", "${sintomaActual.intensidad}/10")
+                        FilaDetalle("Intensidad", "${sintomaActual.intensidad}/10")
                         FilaDetalle("Fecha", sintomaActual.fecha)
                         FilaDetalle("Hora", sintomaActual.hora)
                         sintomaActual.descripcion?.let { FilaDetalle("Descripción", it) }
-                        sintomaActual.desencadenantes?.let { FilaDetalle("⚡ Desencadenantes", it) }
+                        sintomaActual.desencadenantes?.let { FilaDetalle("Desencadenantes", it) }
                     }
                 }
                 Button(

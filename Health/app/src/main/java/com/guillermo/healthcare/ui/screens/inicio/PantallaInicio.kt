@@ -9,6 +9,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,6 +39,29 @@ fun PantallaInicio(
     viewModelDoctor: ViewModelDoctor = hiltViewModel()
 ) {
     val contexto = LocalContext.current
+
+    var mostrarDialogoLogout by remember { mutableStateOf(false) }
+
+    if (mostrarDialogoLogout) {
+        AlertDialog(
+            onDismissRequest = { mostrarDialogoLogout = false },
+            title = { Text("Cerrar sesión") },
+            text = { Text("¿Estás seguro de que quieres cerrar sesión?") },
+            confirmButton = {
+                TextButton(onClick = {
+                    viewModelAuth.cerrarSesion(contexto)
+                    navController.navigate(Pantalla.Login.ruta) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                    mostrarDialogoLogout = false
+                }) { Text("Cerrar sesión", color = MaterialTheme.colorScheme.error) }
+            },
+            dismissButton = {
+                TextButton(onClick = { mostrarDialogoLogout = false }) { Text("Cancelar") }
+            }
+        )
+    }
+
     val medicamentos by viewModelMedicamento.medicamentos.collectAsState()
     val citas by viewModelCita.citas.collectAsState()
     val sintomas by viewModelSintoma.sintomas.collectAsState()
@@ -51,12 +77,7 @@ fun PantallaInicio(
                 ),
                 actions = {
                     IconButton(
-                        onClick = {
-                            viewModelAuth.cerrarSesion(contexto)
-                            navController.navigate(Pantalla.Login.ruta) {
-                                popUpTo(0) { inclusive = true }
-                            }
-                        }
+                        onClick = { mostrarDialogoLogout = true }
                     ) {
                         Icon(
                             Icons.Default.Logout,
