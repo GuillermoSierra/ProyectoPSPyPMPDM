@@ -1,17 +1,24 @@
 package com.guillermo.healthcare.ui.screens.sintomas
 
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.guillermo.healthcare.data.local.entity.Sintoma
+import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -20,6 +27,9 @@ fun PantallaFormularioSintoma(
     navController: NavController,
     viewModel: ViewModelSintoma = hiltViewModel()
 ) {
+    val contexto = LocalContext.current
+    val calendar = Calendar.getInstance()
+
     var nombre by remember { mutableStateOf("") }
     var intensidad by remember { mutableStateOf("") }
     var fecha by remember { mutableStateOf("") }
@@ -32,23 +42,61 @@ fun PantallaFormularioSintoma(
     var errorHora by remember { mutableStateOf(false) }
     var errorIntensidad by remember { mutableStateOf(false) }
 
+    val datePickerDialog = DatePickerDialog(
+        contexto,
+        { _, year, month, day ->
+            fecha = String.format("%04d-%02d-%02d", year, month + 1, day)
+            errorFecha = false
+        },
+        calendar.get(Calendar.YEAR),
+        calendar.get(Calendar.MONTH),
+        calendar.get(Calendar.DAY_OF_MONTH)
+    ).apply {
+        datePicker.minDate = calendar.timeInMillis
+    }
+
+    val timePickerDialog = TimePickerDialog(
+        contexto,
+        { _, hour, minute ->
+            val ahora = Calendar.getInstance()
+            val seleccionada = Calendar.getInstance().apply {
+                set(Calendar.HOUR_OF_DAY, hour)
+                set(Calendar.MINUTE, minute)
+            }
+
+            if (fecha == String.format("%04d-%02d-%02d",
+                    ahora.get(Calendar.YEAR),
+                    ahora.get(Calendar.MONTH) + 1,
+                    ahora.get(Calendar.DAY_OF_MONTH))
+                && seleccionada.before(ahora)
+            ) {
+                hora = String.format("%02d:%02d",
+                    ahora.get(Calendar.HOUR_OF_DAY),
+                    ahora.get(Calendar.MINUTE))
+            } else {
+                hora = String.format("%02d:%02d", hour, minute)
+            }
+            errorHora = false
+        },
+        calendar.get(Calendar.HOUR_OF_DAY),
+        calendar.get(Calendar.MINUTE),
+        true
+    )
+
     val sintomaSeleccionado by viewModel.sintomaSeleccionado.collectAsState()
 
     LaunchedEffect(sintomaId) {
-        if (sintomaId != null) {
-            viewModel.cargarSintomaPorId(sintomaId)
-        }
+        if (sintomaId != null) viewModel.cargarSintomaPorId(sintomaId)
     }
 
     LaunchedEffect(sintomaSeleccionado) {
-        val s = sintomaSeleccionado
-        if (s != null) {
-            nombre = s.nombre
-            intensidad = s.intensidad.toString()
-            fecha = s.fecha
-            hora = s.hora
-            descripcion = s.descripcion ?: ""
-            desencadenantes = s.desencadenantes ?: ""
+        sintomaSeleccionado?.let {
+            nombre = it.nombre
+            intensidad = it.intensidad.toString()
+            fecha = it.fecha
+            hora = it.hora
+            descripcion = it.descripcion ?: ""
+            desencadenantes = it.desencadenantes ?: ""
         }
     }
 
@@ -80,6 +128,7 @@ fun PantallaFormularioSintoma(
                 isError = errorNombre,
                 supportingText = if (errorNombre) {{ Text("El nombre es obligatorio") }} else null
             )
+
             OutlinedTextField(
                 value = intensidad,
                 onValueChange = { intensidad = it; errorIntensidad = false },
@@ -88,22 +137,55 @@ fun PantallaFormularioSintoma(
                 isError = errorIntensidad,
                 supportingText = if (errorIntensidad) {{ Text("Introduce un valor entre 1 y 10") }} else null
             )
+
+            // Fecha con DatePicker
             OutlinedTextField(
                 value = fecha,
-                onValueChange = { fecha = it; errorFecha = false },
-                label = { Text("Fecha (ej: 2026-02-12) *") },
-                modifier = Modifier.fillMaxWidth(),
+                onValueChange = {},
+                label = { Text("Fecha *") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { datePickerDialog.show() },
+                enabled = false,
                 isError = errorFecha,
-                supportingText = if (errorFecha) {{ Text("La fecha es obligatoria") }} else null
+                supportingText = if (errorFecha) {{ Text("La fecha es obligatoria") }} else null,
+                trailingIcon = {
+                    IconButton(onClick = { datePickerDialog.show() }) {
+                        Icon(Icons.Default.CalendarMonth, "Seleccionar fecha")
+                    }
+                },
+                colors = OutlinedTextFieldDefaults.colors(
+                    disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                    disabledBorderColor = if (errorFecha) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.outline,
+                    disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             )
+
+            // Hora con TimePicker
             OutlinedTextField(
                 value = hora,
-                onValueChange = { hora = it; errorHora = false },
-                label = { Text("Hora (ej: 14:30) *") },
-                modifier = Modifier.fillMaxWidth(),
+                onValueChange = {},
+                label = { Text("Hora *") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { timePickerDialog.show() },
+                enabled = false,
                 isError = errorHora,
-                supportingText = if (errorHora) {{ Text("La hora es obligatoria") }} else null
+                supportingText = if (errorHora) {{ Text("La hora es obligatoria") }} else null,
+                trailingIcon = {
+                    IconButton(onClick = { timePickerDialog.show() }) {
+                        Icon(Icons.Default.Schedule, "Seleccionar hora")
+                    }
+                },
+                colors = OutlinedTextFieldDefaults.colors(
+                    disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                    disabledBorderColor = if (errorHora) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.outline,
+                    disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             )
+
             OutlinedTextField(
                 value = descripcion,
                 onValueChange = { descripcion = it },
@@ -111,6 +193,7 @@ fun PantallaFormularioSintoma(
                 modifier = Modifier.fillMaxWidth(),
                 minLines = 2
             )
+
             OutlinedTextField(
                 value = desencadenantes,
                 onValueChange = { desencadenantes = it },

@@ -1,16 +1,22 @@
 package com.guillermo.healthcare.ui.screens.medicamentos
 
+import android.app.DatePickerDialog
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.guillermo.healthcare.data.local.entity.Medicamento
-import com.guillermo.healthcare.ui.screens.medicamentos.ViewModelMedicamento
+import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -19,6 +25,9 @@ fun PantallaFormularioMedicamento(
     navController: NavController,
     viewModel: ViewModelMedicamento = hiltViewModel()
 ) {
+    val contexto = LocalContext.current
+    val calendar = Calendar.getInstance()
+
     var nombre by remember { mutableStateOf("") }
     var dosis by remember { mutableStateOf("") }
     var frecuencia by remember { mutableStateOf("") }
@@ -31,7 +40,29 @@ fun PantallaFormularioMedicamento(
     var errorFrecuencia by remember { mutableStateOf(false) }
     var errorFechaInicio by remember { mutableStateOf(false) }
 
-    // Cargar medicamento si estamos editando
+    val datePickerInicio = DatePickerDialog(
+        contexto,
+        { _, year, month, day ->
+            fechaInicio = String.format("%04d-%02d-%02d", year, month + 1, day)
+            errorFechaInicio = false
+        },
+        calendar.get(Calendar.YEAR),
+        calendar.get(Calendar.MONTH),
+        calendar.get(Calendar.DAY_OF_MONTH)
+    ).apply {
+        datePicker.minDate = calendar.timeInMillis
+    }
+
+    val datePickerFin = DatePickerDialog(
+        contexto,
+        { _, year, month, day ->
+            fechaFin = String.format("%04d-%02d-%02d", year, month + 1, day)
+        },
+        calendar.get(Calendar.YEAR),
+        calendar.get(Calendar.MONTH),
+        calendar.get(Calendar.DAY_OF_MONTH)
+    )
+
     LaunchedEffect(medicamentoId) {
         if (medicamentoId != null) {
             viewModel.cargarMedicamentoPorId(medicamentoId)
@@ -54,9 +85,7 @@ fun PantallaFormularioMedicamento(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = {
-                    Text(if (medicamentoId == null) "Nuevo Medicamento" else "Editar Medicamento")
-                },
+                title = { Text(if (medicamentoId == null) "Nuevo Medicamento" else "Editar Medicamento") },
                 navigationIcon = {
                     IconButton(onClick = { navController.navigateUp() }) {
                         Icon(Icons.Default.ArrowBack, "Volver")
@@ -69,70 +98,83 @@ fun PantallaFormularioMedicamento(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(16.dp),
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Campo Nombre
             OutlinedTextField(
                 value = nombre,
-                onValueChange = {
-                    nombre = it
-                    errorNombre = false
-                },
+                onValueChange = { nombre = it; errorNombre = false },
                 label = { Text("Nombre del medicamento *") },
                 modifier = Modifier.fillMaxWidth(),
                 isError = errorNombre,
                 supportingText = if (errorNombre) {{ Text("El nombre es obligatorio") }} else null
             )
 
-            // Campo Dosis
             OutlinedTextField(
                 value = dosis,
-                onValueChange = {
-                    dosis = it
-                    errorDosis = false
-                },
+                onValueChange = { dosis = it; errorDosis = false },
                 label = { Text("Dosis (ej: 500mg) *") },
                 modifier = Modifier.fillMaxWidth(),
                 isError = errorDosis,
                 supportingText = if (errorDosis) {{ Text("La dosis es obligatoria") }} else null
             )
 
-            // Campo Frecuencia
             OutlinedTextField(
                 value = frecuencia,
-                onValueChange = {
-                    frecuencia = it
-                    errorFrecuencia = false
-                },
+                onValueChange = { frecuencia = it; errorFrecuencia = false },
                 label = { Text("Frecuencia (ej: Cada 8 horas) *") },
                 modifier = Modifier.fillMaxWidth(),
                 isError = errorFrecuencia,
                 supportingText = if (errorFrecuencia) {{ Text("La frecuencia es obligatoria") }} else null
             )
 
-            // Campo Fecha Inicio
+            // Fecha Inicio con DatePicker
             OutlinedTextField(
                 value = fechaInicio,
-                onValueChange = {
-                    fechaInicio = it
-                    errorFechaInicio = false
-                },
-                label = { Text("Fecha de inicio (ej: 2026-02-12) *") },
-                modifier = Modifier.fillMaxWidth(),
+                onValueChange = {},
+                label = { Text("Fecha de inicio *") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { datePickerInicio.show() },
+                enabled = false,
                 isError = errorFechaInicio,
-                supportingText = if (errorFechaInicio) {{ Text("La fecha de inicio es obligatoria") }} else null
+                supportingText = if (errorFechaInicio) {{ Text("La fecha de inicio es obligatoria") }} else null,
+                trailingIcon = {
+                    IconButton(onClick = { datePickerInicio.show() }) {
+                        Icon(Icons.Default.CalendarMonth, "Seleccionar fecha")
+                    }
+                },
+                colors = OutlinedTextFieldDefaults.colors(
+                    disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                    disabledBorderColor = if (errorFechaInicio) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.outline,
+                    disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             )
 
-            // Campo Fecha Fin (opcional)
+            // Fecha Fin con DatePicker (opcional)
             OutlinedTextField(
                 value = fechaFin,
-                onValueChange = { fechaFin = it },
+                onValueChange = {},
                 label = { Text("Fecha de fin (opcional)") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { datePickerFin.show() },
+                enabled = false,
+                trailingIcon = {
+                    IconButton(onClick = { datePickerFin.show() }) {
+                        Icon(Icons.Default.CalendarMonth, "Seleccionar fecha")
+                    }
+                },
+                colors = OutlinedTextFieldDefaults.colors(
+                    disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                    disabledBorderColor = MaterialTheme.colorScheme.outline,
+                    disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             )
 
-            // Campo Notas (opcional)
             OutlinedTextField(
                 value = notas,
                 onValueChange = { notas = it },
@@ -142,12 +184,10 @@ fun PantallaFormularioMedicamento(
                 maxLines = 5
             )
 
-            Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.height(16.dp))
 
-            // Botón Guardar
             Button(
                 onClick = {
-                    // Validación
                     errorNombre = nombre.isBlank()
                     errorDosis = dosis.isBlank()
                     errorFrecuencia = frecuencia.isBlank()
@@ -163,13 +203,8 @@ fun PantallaFormularioMedicamento(
                             fechaFin = fechaFin.ifBlank { null },
                             notas = notas.ifBlank { null }
                         )
-
-                        if (medicamentoId == null) {
-                            viewModel.insertarMedicamento(medicamento)
-                        } else {
-                            viewModel.actualizarMedicamento(medicamento)
-                        }
-
+                        if (medicamentoId == null) viewModel.insertarMedicamento(medicamento)
+                        else viewModel.actualizarMedicamento(medicamento)
                         navController.navigateUp()
                     }
                 },
