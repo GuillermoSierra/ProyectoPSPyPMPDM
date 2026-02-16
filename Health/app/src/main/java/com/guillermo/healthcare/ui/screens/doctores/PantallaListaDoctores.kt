@@ -12,6 +12,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -71,6 +74,25 @@ fun TarjetaDoctor(
     onClickItem: () -> Unit,
     onClickEliminar: () -> Unit
 ) {
+    var mostrarDialogo by remember { mutableStateOf(false) }
+
+    if (mostrarDialogo) {
+        AlertDialog(
+            onDismissRequest = { mostrarDialogo = false },
+            title = { Text("Eliminar doctor") },
+            text = { Text("¿Estás seguro de que quieres eliminar al Dr. ${doctor.nombre}?") },
+            confirmButton = {
+                TextButton(onClick = {
+                    onClickEliminar()
+                    mostrarDialogo = false
+                }) { Text("Eliminar", color = MaterialTheme.colorScheme.error) }
+            },
+            dismissButton = {
+                TextButton(onClick = { mostrarDialogo = false }) { Text("Cancelar") }
+            }
+        )
+    }
+
     Card(
         modifier = Modifier.fillMaxWidth().clickable { onClickItem() },
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
@@ -81,12 +103,24 @@ fun TarjetaDoctor(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(doctor.nombre, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                Text(
+                    text = doctor.nombre,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
                 Spacer(modifier = Modifier.height(4.dp))
-                Text("${doctor.especialidad}", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                Text("${doctor.telefono}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(
+                    text = "${doctor.especialidad}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Text(
+                    text = "${doctor.telefono}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
-            IconButton(onClick = onClickEliminar) {
+            IconButton(onClick = { mostrarDialogo = true }) {
                 Icon(Icons.Default.Delete, "Eliminar", tint = MaterialTheme.colorScheme.error)
             }
         }

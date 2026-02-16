@@ -12,6 +12,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -20,7 +23,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.guillermo.healthcare.data.local.entity.Cita
 import com.guillermo.healthcare.ui.navigation.Pantalla
-import com.guillermo.healthcare.ui.screens.citas.ViewModelCita
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -81,6 +83,25 @@ fun TarjetaCita(
     onClickItem: () -> Unit,
     onClickEliminar: () -> Unit
 ) {
+    var mostrarDialogo by remember { mutableStateOf(false) }
+
+    if (mostrarDialogo) {
+        AlertDialog(
+            onDismissRequest = { mostrarDialogo = false },
+            title = { Text("Eliminar cita") },
+            text = { Text("¿Estás seguro de que quieres eliminar la cita con ${cita.nombreDoctor}?") },
+            confirmButton = {
+                TextButton(onClick = {
+                    onClickEliminar()
+                    mostrarDialogo = false
+                }) { Text("Eliminar", color = MaterialTheme.colorScheme.error) }
+            },
+            dismissButton = {
+                TextButton(onClick = { mostrarDialogo = false }) { Text("Cancelar") }
+            }
+        )
+    }
+
     Card(
         modifier = Modifier.fillMaxWidth().clickable { onClickItem() },
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
@@ -113,7 +134,7 @@ fun TarjetaCita(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
-            IconButton(onClick = onClickEliminar) {
+            IconButton(onClick = { mostrarDialogo = true }) {
                 Icon(Icons.Default.Delete, "Eliminar", tint = MaterialTheme.colorScheme.error)
             }
         }

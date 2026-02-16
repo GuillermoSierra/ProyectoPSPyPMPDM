@@ -12,6 +12,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -91,16 +94,31 @@ fun TarjetaMedicamento(
     onClickItem: () -> Unit,
     onClickEliminar: () -> Unit
 ) {
+    var mostrarDialogo by remember { mutableStateOf(false) }
+
+    if (mostrarDialogo) {
+        AlertDialog(
+            onDismissRequest = { mostrarDialogo = false },
+            title = { Text("Eliminar medicamento") },
+            text = { Text("¿Estás seguro de que quieres eliminar ${medicamento.nombre}?") },
+            confirmButton = {
+                TextButton(onClick = {
+                    onClickEliminar()
+                    mostrarDialogo = false
+                }) { Text("Eliminar", color = MaterialTheme.colorScheme.error) }
+            },
+            dismissButton = {
+                TextButton(onClick = { mostrarDialogo = false }) { Text("Cancelar") }
+            }
+        )
+    }
+
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClickItem() },
+        modifier = Modifier.fillMaxWidth().clickable { onClickItem() },
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
+            modifier = Modifier.fillMaxWidth().padding(16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -122,13 +140,8 @@ fun TarjetaMedicamento(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
-
-            IconButton(onClick = onClickEliminar) {
-                Icon(
-                    Icons.Default.Delete,
-                    contentDescription = "Eliminar",
-                    tint = MaterialTheme.colorScheme.error
-                )
+            IconButton(onClick = { mostrarDialogo = true }) {
+                Icon(Icons.Default.Delete, "Eliminar", tint = MaterialTheme.colorScheme.error)
             }
         }
     }
