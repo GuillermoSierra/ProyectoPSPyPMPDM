@@ -16,7 +16,7 @@ class RepositorioOpenFDA @Inject constructor(
 ) {
     suspend fun buscarMedicamentos(consulta: String): ResultadoApi<List<MedicamentoDto>> {
         return try {
-            val respuesta = cliente.api.buscarMedicamentos("brand_name:$consulta")
+            val respuesta = cliente.api.buscarMedicamentos("brand_name:$consulta*")
             if (respuesta.resultados != null && respuesta.resultados.isNotEmpty()) {
                 ResultadoApi.Exito(respuesta.resultados)
             } else {
