@@ -8,6 +8,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -34,6 +35,7 @@ fun PantallaFormularioMedicamento(
     var frecuencia by remember { mutableStateOf("") }
     var fechaInicio by remember { mutableStateOf("") }
     var fechaFin by remember { mutableStateOf("") }
+    var fechaFinIndefinida by remember { mutableStateOf(false) }
     var notas by remember { mutableStateOf("") }
 
     var errorNombre by remember { mutableStateOf(false) }
@@ -50,19 +52,20 @@ fun PantallaFormularioMedicamento(
         calendar.get(Calendar.YEAR),
         calendar.get(Calendar.MONTH),
         calendar.get(Calendar.DAY_OF_MONTH)
-    ).apply {
-        datePicker.minDate = calendar.timeInMillis
-    }
+    )
 
     val datePickerFin = DatePickerDialog(
         contexto,
         { _, year, month, day ->
             fechaFin = String.format("%04d-%02d-%02d", year, month + 1, day)
+            fechaFinIndefinida = false
         },
         calendar.get(Calendar.YEAR),
         calendar.get(Calendar.MONTH),
         calendar.get(Calendar.DAY_OF_MONTH)
-    )
+    ).apply {
+        datePicker.minDate = calendar.timeInMillis
+    }
 
     LaunchedEffect(medicamentoId) {
         if (medicamentoId != null) {
@@ -79,6 +82,7 @@ fun PantallaFormularioMedicamento(
             frecuencia = med.frecuencia
             fechaInicio = med.fechaInicio
             fechaFin = med.fechaFin ?: ""
+            fechaFinIndefinida = med.fechaFin == null
             notas = med.notas ?: ""
         }
     }
@@ -130,7 +134,6 @@ fun PantallaFormularioMedicamento(
                 supportingText = if (errorFrecuencia) {{ Text("La frecuencia es obligatoria") }} else null
             )
 
-            // Fecha Inicio con DatePicker
             OutlinedTextField(
                 value = fechaInicio,
                 onValueChange = {},
@@ -154,27 +157,53 @@ fun PantallaFormularioMedicamento(
                 )
             )
 
-            // Fecha Fin con DatePicker (opcional)
-            OutlinedTextField(
-                value = fechaFin,
-                onValueChange = {},
-                label = { Text("Fecha de fin (opcional)") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { datePickerFin.show() },
-                enabled = false,
-                trailingIcon = {
-                    IconButton(onClick = { datePickerFin.show() }) {
-                        Icon(Icons.Default.CalendarMonth, "Seleccionar fecha")
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+            ) {
+                Checkbox(
+                    checked = fechaFinIndefinida,
+                    onCheckedChange = {
+                        fechaFinIndefinida = it
+                        if (it) fechaFin = ""
                     }
-                },
-                colors = OutlinedTextFieldDefaults.colors(
-                    disabledTextColor = MaterialTheme.colorScheme.onSurface,
-                    disabledBorderColor = MaterialTheme.colorScheme.outline,
-                    disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-            )
+                Text("Fecha fin indefinida", modifier = Modifier.clickable {
+                    fechaFinIndefinida = !fechaFinIndefinida
+                    if (fechaFinIndefinida) fechaFin = ""
+                })
+            }
+
+            if (!fechaFinIndefinida) {
+                OutlinedTextField(
+                    value = fechaFin,
+                    onValueChange = {},
+                    label = { Text("Fecha de fin") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { datePickerFin.show() },
+                    enabled = false,
+                    trailingIcon = {
+                        Row {
+                            if (fechaFin.isNotBlank()) {
+                                IconButton(onClick = { fechaFin = "" }) {
+                                    Icon(Icons.Default.Clear, "Limpiar fecha")
+                                }
+                            }
+                            IconButton(onClick = { datePickerFin.show() }) {
+                                Icon(Icons.Default.CalendarMonth, "Seleccionar fecha")
+                            }
+                        }
+                    },
+                    colors = OutlinedTextFieldDefaults.colors(
+                        disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                        disabledBorderColor = MaterialTheme.colorScheme.outline,
+                        disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                )
+            }
 
             OutlinedTextField(
                 value = notas,
@@ -195,9 +224,6 @@ fun PantallaFormularioMedicamento(
                     errorFechaInicio = fechaInicio.isBlank()
 
                     if (!errorNombre && !errorDosis && !errorFrecuencia && !errorFechaInicio) {
-
-                        android.util.Log.d("MEDICAMENTO", "userId al crear: $userId")
-
                         val medicamento = Medicamento(
                             id = medicamentoId ?: 0,
                             userId = userId,
@@ -205,7 +231,7 @@ fun PantallaFormularioMedicamento(
                             dosis = dosis,
                             frecuencia = frecuencia,
                             fechaInicio = fechaInicio,
-                            fechaFin = fechaFin.ifBlank { null },
+                            fechaFin = if (fechaFinIndefinida) null else fechaFin.ifBlank { null },  // ← CAMBIO
                             notas = notas.ifBlank { null }
                         )
                         if (medicamentoId == null) viewModel.insertarMedicamento(medicamento)

@@ -31,7 +31,6 @@ fun PantallaDetalleMedicamento(
 
     val medicamento by viewModel.medicamentoSeleccionado.collectAsState()
 
-    // Diálogo de confirmación para eliminar
     if (mostrarDialogo) {
         AlertDialog(
             onDismissRequest = { mostrarDialogo = false },
@@ -132,9 +131,10 @@ fun PantallaDetalleMedicamento(
                         FilaDetalle(etiqueta = "Frecuencia", valor = medicamento!!.frecuencia)
                         FilaDetalle(etiqueta = "Fecha de inicio", valor = medicamento!!.fechaInicio)
 
-                        medicamento!!.fechaFin?.let {
-                            FilaDetalle(etiqueta = "Fecha de fin", valor = it)
-                        }
+                        FilaDetalle(
+                            etiqueta = "Fecha de fin",
+                            valor = medicamento!!.fechaFin ?: "Indefinida"
+                        )
 
                         medicamento!!.notas?.let {
                             Divider()
@@ -143,7 +143,6 @@ fun PantallaDetalleMedicamento(
                     }
                 }
 
-                // Botón Editar abajo
                 Button(
                     onClick = {
                         navController.navigate(
@@ -157,7 +156,6 @@ fun PantallaDetalleMedicamento(
                     Text("Editar Medicamento")
                 }
 
-                // Botón Eliminar abajo
                 OutlinedButton(
                     onClick = { mostrarDialogo = true },
                     modifier = Modifier.fillMaxWidth(),
