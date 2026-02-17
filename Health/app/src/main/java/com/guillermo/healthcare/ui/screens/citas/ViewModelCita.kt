@@ -30,13 +30,9 @@ class ViewModelCita @Inject constructor(
     private val _cargando = MutableStateFlow(false)
     val cargando: StateFlow<Boolean> = _cargando.asStateFlow()
 
-    init {
-        cargarCitas()
-    }
-
-    private fun cargarCitas() {
+    fun cargarCitas(userId: String) {
         viewModelScope.launch {
-            obtenerCitas().collect { lista ->
+            obtenerCitas(userId).collect { lista ->
                 _citas.value = lista
             }
         }
@@ -44,8 +40,8 @@ class ViewModelCita @Inject constructor(
 
     fun cargarCitaPorId(id: Int) {
         viewModelScope.launch {
-            repositorio.obtenerCitaPorId(id).collect { cita ->
-                _citaSeleccionada.value = cita
+            repositorio.obtenerCitaPorId(id).collect {
+                _citaSeleccionada.value = it
             }
         }
     }

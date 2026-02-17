@@ -7,10 +7,11 @@ import androidx.room.PrimaryKey
 data class Cita(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
+    val userId: String = "",
     val nombreDoctor: String,
-    val especialidad: String,       // Ej: "Cardiólogo"
-    val fecha: String,              // Ej: "2026-02-15"
-    val hora: String,               // Ej: "10:30"
-    val lugar: String,              // Ej: "Hospital Central"
+    val especialidad: String,
+    val fecha: String,
+    val hora: String,
+    val lugar: String,
     val notas: String?
 )

@@ -8,27 +8,18 @@ import javax.inject.Inject
 class RepositorioCita @Inject constructor(
     private val citaDao: CitaDao
 ) {
-    fun obtenerTodasCitas(): Flow<List<Cita>> {
-        return citaDao.obtenerTodasCitas()
-    }
+    fun obtenerTodasCitas(userId: String): Flow<List<Cita>> =
+        citaDao.obtenerTodasCitas(userId)
 
-    fun obtenerCitaPorId(id: Int): Flow<Cita?> {
-        return citaDao.obtenerCitaPorId(id)
-    }
+    fun obtenerCitaPorId(id: Int): Flow<Cita?> =
+        citaDao.obtenerCitaPorId(id)
 
-    fun buscarCitas(consulta: String): Flow<List<Cita>> {
-        return citaDao.buscarCitas(consulta)
-    }
-
-    suspend fun insertarCita(cita: Cita) {
+    suspend fun insertarCita(cita: Cita) =
         citaDao.insertar(cita)
-    }
 
-    suspend fun actualizarCita(cita: Cita) {
+    suspend fun actualizarCita(cita: Cita) =
         citaDao.actualizar(cita)
-    }
 
-    suspend fun eliminarCita(cita: Cita) {
+    suspend fun eliminarCita(cita: Cita) =
         citaDao.eliminar(cita)
-    }
 }

@@ -29,13 +29,9 @@ class ViewModelMedicamento @Inject constructor(
     private val _cargando = MutableStateFlow(false)
     val cargando: StateFlow<Boolean> = _cargando.asStateFlow()
 
-    init {
-        cargarMedicamentos()
-    }
-
-    private fun cargarMedicamentos() {
+    fun cargarMedicamentos(userId: String) {
         viewModelScope.launch {
-            obtenerMedicamentos().collect { lista ->
+            obtenerMedicamentos(userId).collect { lista ->
                 _medicamentos.value = lista
             }
         }
@@ -43,8 +39,8 @@ class ViewModelMedicamento @Inject constructor(
 
     fun cargarMedicamentoPorId(id: Int) {
         viewModelScope.launch {
-            obtenerMedicamentoPorId(id).collect { medicamento ->
-                _medicamentoSeleccionado.value = medicamento
+            obtenerMedicamentoPorId(id).collect {
+                _medicamentoSeleccionado.value = it
             }
         }
     }

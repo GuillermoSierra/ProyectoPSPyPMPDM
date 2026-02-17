@@ -8,16 +8,12 @@ import javax.inject.Inject
 class RepositorioMedicamento @Inject constructor(
     private val medicamentoDao: MedicamentoDao
 ) {
-    fun obtenerTodosMedicamentos(): Flow<List<Medicamento>> {
-        return medicamentoDao.obtenerTodosMedicamentos()
+    fun obtenerTodosMedicamentos(userId: String): Flow<List<Medicamento>> {
+        return medicamentoDao.obtenerTodosMedicamentos(userId)
     }
 
     fun obtenerMedicamentoPorId(id: Int): Flow<Medicamento?> {
         return medicamentoDao.obtenerMedicamentoPorId(id)
-    }
-
-    fun buscarMedicamentos(consulta: String): Flow<List<Medicamento>> {
-        return medicamentoDao.buscarMedicamentos(consulta)
     }
 
     suspend fun insertarMedicamento(medicamento: Medicamento) {

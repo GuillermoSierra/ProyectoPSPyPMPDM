@@ -30,13 +30,9 @@ class ViewModelSintoma @Inject constructor(
     private val _cargando = MutableStateFlow(false)
     val cargando: StateFlow<Boolean> = _cargando.asStateFlow()
 
-    init {
-        cargarSintomas()
-    }
-
-    private fun cargarSintomas() {
+    fun cargarSintomas(userId: String) {
         viewModelScope.launch {
-            obtenerSintomas().collect { lista ->
+            obtenerSintomas(userId).collect { lista ->
                 _sintomas.value = lista
             }
         }
@@ -44,8 +40,8 @@ class ViewModelSintoma @Inject constructor(
 
     fun cargarSintomaPorId(id: Int) {
         viewModelScope.launch {
-            repositorio.obtenerSintomaPorId(id).collect { sintoma ->
-                _sintomaSeleccionado.value = sintoma
+            repositorio.obtenerSintomaPorId(id).collect {
+                _sintomaSeleccionado.value = it
             }
         }
     }

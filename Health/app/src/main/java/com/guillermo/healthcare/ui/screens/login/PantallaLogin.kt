@@ -11,21 +11,19 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.guillermo.healthcare.ui.navigation.Pantalla
 
 @Composable
 fun PantallaLogin(
     navController: NavController,
-    viewModel: ViewModelAuth = hiltViewModel()
+    viewModelAuth: ViewModelAuth
 ) {
-    val estado by viewModel.estado.collectAsState()
+    val estado by viewModelAuth.estado.collectAsState()
     val contexto = LocalContext.current
 
-    // Navegación cuando se autentica
-    if (estado.autenticado) {
-        LaunchedEffect(Unit) {
+    LaunchedEffect(estado.autenticado) {
+        if (estado.autenticado && !estado.cargando) {
             navController.navigate(Pantalla.Inicio.ruta) {
                 popUpTo(Pantalla.Login.ruta) { inclusive = true }
             }
@@ -83,7 +81,7 @@ fun PantallaLogin(
         }
 
         Button(
-            onClick = { viewModel.iniciarSesion(contexto) },
+            onClick = { viewModelAuth.iniciarSesion(contexto) },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),

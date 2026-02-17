@@ -19,6 +19,7 @@ import com.guillermo.healthcare.data.local.entity.Doctor
 @Composable
 fun PantallaFormularioDoctor(
     doctorId: Int?,
+    userId: String,
     navController: NavController,
     viewModel: ViewModelDoctor = hiltViewModel()
 ) {
@@ -152,8 +153,12 @@ fun PantallaFormularioDoctor(
                     errorEmail = !emailValido
 
                     if (!errorNombre && !errorEspecialidad && !errorTelefono && !errorEmail && !errorDireccion) {
+
+                        android.util.Log.d("DOCTOR", "userId al crear: $userId")
+
                         val doctor = Doctor(
                             id = doctorId ?: 0,
+                            userId = userId,
                             nombre = nombre,
                             especialidad = especialidad,
                             telefono = telefono,

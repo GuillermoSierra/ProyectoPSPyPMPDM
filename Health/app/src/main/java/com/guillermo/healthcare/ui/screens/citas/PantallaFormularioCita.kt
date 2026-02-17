@@ -24,6 +24,7 @@ import java.util.Calendar
 @Composable
 fun PantallaFormularioCita(
     citaId: Int?,
+    userId: String,
     navController: NavController,
     viewModel: ViewModelCita = hiltViewModel()
 ) {
@@ -214,8 +215,12 @@ fun PantallaFormularioCita(
                     errorLugar = lugar.isBlank()
 
                     if (!errorNombreDoctor && !errorEspecialidad && !errorFecha && !errorHora && !errorLugar) {
+
+                        android.util.Log.d("CITA", "userId al crear: $userId")
+
                         val cita = Cita(
                             id = citaId ?: 0,
+                            userId = userId,
                             nombreDoctor = nombreDoctor,
                             especialidad = especialidad,
                             fecha = fecha,

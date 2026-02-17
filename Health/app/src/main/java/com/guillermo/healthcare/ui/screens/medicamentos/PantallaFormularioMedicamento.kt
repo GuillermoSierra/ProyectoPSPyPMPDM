@@ -22,6 +22,7 @@ import java.util.Calendar
 @Composable
 fun PantallaFormularioMedicamento(
     medicamentoId: Int?,
+    userId: String,
     navController: NavController,
     viewModel: ViewModelMedicamento = hiltViewModel()
 ) {
@@ -194,8 +195,12 @@ fun PantallaFormularioMedicamento(
                     errorFechaInicio = fechaInicio.isBlank()
 
                     if (!errorNombre && !errorDosis && !errorFrecuencia && !errorFechaInicio) {
+
+                        android.util.Log.d("MEDICAMENTO", "userId al crear: $userId")
+
                         val medicamento = Medicamento(
                             id = medicamentoId ?: 0,
+                            userId = userId,
                             nombre = nombre,
                             dosis = dosis,
                             frecuencia = frecuencia,

@@ -15,6 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -23,14 +24,23 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.guillermo.healthcare.data.local.entity.Sintoma
 import com.guillermo.healthcare.ui.navigation.Pantalla
+import com.guillermo.healthcare.ui.screens.login.ViewModelAuth
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PantallaListaSintomas(
     navController: NavController,
-    viewModel: ViewModelSintoma = hiltViewModel()
+    viewModel: ViewModelSintoma = hiltViewModel(),
+    viewModelAuth: ViewModelAuth
 ) {
+    val estado by viewModelAuth.estado.collectAsState()
     val sintomas by viewModel.sintomas.collectAsState()
+
+    LaunchedEffect(estado.userId) {
+        if (estado.userId.isNotBlank()) {
+            viewModel.cargarSintomas(estado.userId)
+        }
+    }
 
     Scaffold(
         topBar = {

@@ -8,8 +8,8 @@ import javax.inject.Inject
 class ObtenerSintomasUseCase @Inject constructor(
     private val repositorio: RepositorioSintoma
 ) {
-    operator fun invoke(): Flow<List<Sintoma>> =
-        repositorio.obtenerTodosSintomas()
+    operator fun invoke(userId: String): Flow<List<Sintoma>> =
+        repositorio.obtenerTodosSintomas(userId)
 }
 
 class InsertarSintomaUseCase @Inject constructor(

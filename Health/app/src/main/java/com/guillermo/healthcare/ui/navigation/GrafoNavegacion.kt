@@ -1,12 +1,15 @@
 package com.guillermo.healthcare.ui.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.guillermo.healthcare.ui.screens.login.PantallaLogin
+import com.guillermo.healthcare.ui.screens.login.ViewModelAuth
 import com.guillermo.healthcare.ui.screens.inicio.PantallaInicio
 import com.guillermo.healthcare.ui.screens.medicamentos.PantallaListaMedicamentos
 import com.guillermo.healthcare.ui.screens.medicamentos.PantallaDetalleMedicamento
@@ -25,25 +28,36 @@ import com.guillermo.healthcare.ui.screens.busqueda.PantallaBusqueda
 @Composable
 fun GrafoNavegacion(
     navController: NavHostController,
+    viewModelAuth: ViewModelAuth,
     destinoInicial: String = Pantalla.Login.ruta
 ) {
+    val estadoAuth by viewModelAuth.estado.collectAsState()
+    val userId = estadoAuth.userId
+
     NavHost(
         navController = navController,
         startDestination = destinoInicial
     ) {
-        // Login
         composable(route = Pantalla.Login.ruta) {
-            PantallaLogin(navController = navController)
+            PantallaLogin(
+                navController = navController,
+                viewModelAuth = viewModelAuth
+            )
         }
 
-        // Inicio
         composable(route = Pantalla.Inicio.ruta) {
-            PantallaInicio(navController = navController)
+            PantallaInicio(
+                navController = navController,
+                viewModelAuth = viewModelAuth
+            )
         }
 
         // Medicamentos
         composable(route = Pantalla.ListaMedicamentos.ruta) {
-            PantallaListaMedicamentos(navController = navController)
+            PantallaListaMedicamentos(
+                navController = navController,
+                viewModelAuth = viewModelAuth
+            )
         }
         composable(
             route = Pantalla.DetalleMedicamento.ruta,
@@ -62,13 +76,17 @@ fun GrafoNavegacion(
             val id = backStackEntry.arguments?.getInt("medicamentoId") ?: -1
             PantallaFormularioMedicamento(
                 medicamentoId = if (id == -1) null else id,
+                userId = userId,
                 navController = navController
             )
         }
 
         // Citas
         composable(route = Pantalla.ListaCitas.ruta) {
-            PantallaListaCitas(navController = navController)
+            PantallaListaCitas(
+                navController = navController,
+                viewModelAuth = viewModelAuth
+            )
         }
         composable(
             route = Pantalla.DetalleCita.ruta,
@@ -87,13 +105,17 @@ fun GrafoNavegacion(
             val id = backStackEntry.arguments?.getInt("citaId") ?: -1
             PantallaFormularioCita(
                 citaId = if (id == -1) null else id,
+                userId = userId,
                 navController = navController
             )
         }
 
         // Síntomas
         composable(route = Pantalla.ListaSintomas.ruta) {
-            PantallaListaSintomas(navController = navController)
+            PantallaListaSintomas(
+                navController = navController,
+                viewModelAuth = viewModelAuth
+            )
         }
         composable(
             route = Pantalla.DetalleSintoma.ruta,
@@ -112,13 +134,17 @@ fun GrafoNavegacion(
             val id = backStackEntry.arguments?.getInt("sintomaId") ?: -1
             PantallaFormularioSintoma(
                 sintomaId = if (id == -1) null else id,
+                userId = userId,
                 navController = navController
             )
         }
 
         // Doctores
         composable(route = Pantalla.ListaDoctores.ruta) {
-            PantallaListaDoctores(navController = navController)
+            PantallaListaDoctores(
+                navController = navController,
+                viewModelAuth = viewModelAuth
+            )
         }
         composable(
             route = Pantalla.DetalleDoctor.ruta,
@@ -137,9 +163,11 @@ fun GrafoNavegacion(
             val id = backStackEntry.arguments?.getInt("doctorId") ?: -1
             PantallaFormularioDoctor(
                 doctorId = if (id == -1) null else id,
+                userId = userId,
                 navController = navController
             )
         }
+
         composable(route = Pantalla.Busqueda.ruta) {
             PantallaBusqueda(navController = navController)
         }

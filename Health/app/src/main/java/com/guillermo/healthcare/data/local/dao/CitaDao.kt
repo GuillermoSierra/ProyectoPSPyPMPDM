@@ -7,6 +7,12 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface CitaDao {
 
+    @Query("SELECT * FROM citas WHERE userId = :userId ORDER BY id DESC")
+    fun obtenerTodasCitas(userId: String): Flow<List<Cita>>
+
+    @Query("SELECT * FROM citas WHERE id = :id")
+    fun obtenerCitaPorId(id: Int): Flow<Cita?>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertar(cita: Cita)
 
@@ -15,13 +21,4 @@ interface CitaDao {
 
     @Delete
     suspend fun eliminar(cita: Cita)
-
-    @Query("SELECT * FROM citas ORDER BY fecha DESC, hora DESC")
-    fun obtenerTodasCitas(): Flow<List<Cita>>
-
-    @Query("SELECT * FROM citas WHERE id = :id")
-    fun obtenerCitaPorId(id: Int): Flow<Cita?>
-
-    @Query("SELECT * FROM citas WHERE nombreDoctor LIKE '%' || :busqueda || '%' OR especialidad LIKE '%' || :busqueda || '%'")
-    fun buscarCitas(busqueda: String): Flow<List<Cita>>
 }

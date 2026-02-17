@@ -30,13 +30,9 @@ class ViewModelDoctor @Inject constructor(
     private val _cargando = MutableStateFlow(false)
     val cargando: StateFlow<Boolean> = _cargando.asStateFlow()
 
-    init {
-        cargarDoctores()
-    }
-
-    private fun cargarDoctores() {
+    fun cargarDoctores(userId: String) {
         viewModelScope.launch {
-            obtenerDoctores().collect { lista ->
+            obtenerDoctores(userId).collect { lista ->
                 _doctores.value = lista
             }
         }
@@ -44,8 +40,8 @@ class ViewModelDoctor @Inject constructor(
 
     fun cargarDoctorPorId(id: Int) {
         viewModelScope.launch {
-            repositorio.obtenerDoctorPorId(id).collect { doctor ->
-                _doctorSeleccionado.value = doctor
+            repositorio.obtenerDoctorPorId(id).collect {
+                _doctorSeleccionado.value = it
             }
         }
     }

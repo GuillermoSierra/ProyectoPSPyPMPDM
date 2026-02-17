@@ -17,6 +17,7 @@ data class EstadoAuth(
     val cargando: Boolean = false,
     val autenticado: Boolean = false,
     val error: String? = null,
+    val userId: String = "",
     val nombreUsuario: String? = null,
     val emailUsuario: String? = null
 )
@@ -40,9 +41,15 @@ class ViewModelAuth @Inject constructor() : ViewModel() {
             .withScope("openid profile email")
             .start(context, object : Callback<Credentials, AuthenticationException> {
                 override fun onSuccess(result: Credentials) {
+                    val userId = result.user.getId() ?: ""
+                    val prefs = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
+                    prefs.edit().putString("userId", userId).apply()
+                    prefs.edit().putString("nombreUsuario", result.user.name).apply()
+                    prefs.edit().putString("emailUsuario", result.user.email).apply()
                     _estado.value = EstadoAuth(
                         cargando = false,
                         autenticado = true,
+                        userId = userId,
                         nombreUsuario = result.user.name,
                         emailUsuario = result.user.email
                     )
@@ -58,17 +65,23 @@ class ViewModelAuth @Inject constructor() : ViewModel() {
             })
     }
 
-    fun cerrarSesion(context: Context) {
-        WebAuthProvider.logout(auth0)
-            .withScheme("com.guillermo.healthcare")
-            .start(context, object : Callback<Void?, AuthenticationException> {
-                override fun onSuccess(result: Void?) {
-                    _estado.value = EstadoAuth()
-                }
+    fun cargarSesionGuardada(context: Context) {
+        val prefs = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
+        val userId = prefs.getString("userId", "") ?: ""
+        if (userId.isNotBlank()) {
+            _estado.value = EstadoAuth(
+                cargando = false,
+                autenticado = true,
+                userId = userId,
+                nombreUsuario = prefs.getString("nombreUsuario", null),
+                emailUsuario = prefs.getString("emailUsuario", null)
+            )
+        }
+    }
 
-                override fun onFailure(error: AuthenticationException) {
-                    _estado.value = EstadoAuth()
-                }
-            })
+    fun cerrarSesionLocal(context: Context) {
+        val prefs = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
+        prefs.edit().clear().apply()
+        _estado.value = EstadoAuth(cargando = false, autenticado = false)
     }
 }

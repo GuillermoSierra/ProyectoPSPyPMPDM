@@ -7,8 +7,9 @@ import androidx.room.PrimaryKey
 data class Doctor(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
+    val userId: String = "",
     val nombre: String,
-    val especialidad: String,       // Ej: "Cardiólogo"
+    val especialidad: String,
     val telefono: String,
     val email: String?,
     val direccion: String,

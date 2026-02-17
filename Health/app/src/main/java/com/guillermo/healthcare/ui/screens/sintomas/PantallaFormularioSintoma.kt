@@ -24,6 +24,7 @@ import java.util.Calendar
 @Composable
 fun PantallaFormularioSintoma(
     sintomaId: Int?,
+    userId: String,
     navController: NavController,
     viewModel: ViewModelSintoma = hiltViewModel()
 ) {
@@ -213,8 +214,12 @@ fun PantallaFormularioSintoma(
                     errorIntensidad = intensidadInt == null || intensidadInt !in 1..10
 
                     if (!errorNombre && !errorFecha && !errorHora && !errorIntensidad) {
+
+                        android.util.Log.d("SINTOMA", "userId al crear: $userId")
+
                         val sintoma = Sintoma(
                             id = sintomaId ?: 0,
+                            userId = userId,
                             nombre = nombre,
                             intensidad = intensidadInt!!,
                             fecha = fecha,

@@ -10,6 +10,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -23,14 +24,23 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.guillermo.healthcare.data.local.entity.Cita
 import com.guillermo.healthcare.ui.navigation.Pantalla
+import com.guillermo.healthcare.ui.screens.login.ViewModelAuth
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PantallaListaCitas(
     navController: NavController,
-    viewModel: ViewModelCita = hiltViewModel()
+    viewModel: ViewModelCita = hiltViewModel(),
+    viewModelAuth: ViewModelAuth
 ) {
+    val estado by viewModelAuth.estado.collectAsState()
     val citas by viewModel.citas.collectAsState()
+
+    LaunchedEffect(estado.userId) {
+        if (estado.userId.isNotBlank()) {
+            viewModel.cargarCitas(estado.userId)
+        }
+    }
 
     Scaffold(
         topBar = {

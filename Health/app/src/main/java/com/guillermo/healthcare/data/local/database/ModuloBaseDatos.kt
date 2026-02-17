@@ -26,7 +26,7 @@ object ModuloBaseDatos {
             contexto,
             BaseDatosSalud::class.java,
             "base_datos_salud"
-        ).build()
+        ).addMigrations(BaseDatosSalud.MIGRATION_1_2).build()
     }
 
     @Provides

@@ -7,10 +7,11 @@ import androidx.room.PrimaryKey
 data class Medicamento(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
+    val userId: String = "",
     val nombre: String,
-    val dosis: String,              // Ej: "500mg"
-    val frecuencia: String,         // Ej: "Cada 8 horas"
-    val fechaInicio: String,        // Ej: "2026-02-01"
-    val fechaFin: String?,          // Puede ser null si es indefinido
-    val notas: String?              // Notas adicionales
+    val dosis: String,
+    val frecuencia: String,
+    val fechaInicio: String,
+    val fechaFin: String?,
+    val notas: String?
 )

@@ -8,8 +8,8 @@ import javax.inject.Inject
 class ObtenerCitasUseCase @Inject constructor(
     private val repositorio: RepositorioCita
 ) {
-    operator fun invoke(): Flow<List<Cita>> =
-        repositorio.obtenerTodasCitas()
+    operator fun invoke(userId: String): Flow<List<Cita>> =
+        repositorio.obtenerTodasCitas(userId)
 }
 
 class InsertarCitaUseCase @Inject constructor(

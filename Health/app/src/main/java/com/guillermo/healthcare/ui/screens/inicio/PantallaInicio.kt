@@ -12,6 +12,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,7 +33,7 @@ import com.guillermo.healthcare.ui.screens.sintomas.ViewModelSintoma
 @Composable
 fun PantallaInicio(
     navController: NavController,
-    viewModelAuth: ViewModelAuth = hiltViewModel(),
+    viewModelAuth: ViewModelAuth,
     viewModelMedicamento: ViewModelMedicamento = hiltViewModel(),
     viewModelCita: ViewModelCita = hiltViewModel(),
     viewModelSintoma: ViewModelSintoma = hiltViewModel(),
@@ -41,6 +42,7 @@ fun PantallaInicio(
     val contexto = LocalContext.current
 
     var mostrarDialogoLogout by remember { mutableStateOf(false) }
+    var cerrando by remember { mutableStateOf(false) }  // ← AÑADIR
 
     if (mostrarDialogoLogout) {
         AlertDialog(
@@ -48,13 +50,17 @@ fun PantallaInicio(
             title = { Text("Cerrar sesión") },
             text = { Text("¿Estás seguro de que quieres cerrar sesión?") },
             confirmButton = {
-                TextButton(onClick = {
-                    viewModelAuth.cerrarSesion(contexto)
-                    navController.navigate(Pantalla.Login.ruta) {
-                        popUpTo(0) { inclusive = true }
+                TextButton(
+                    enabled = !cerrando,
+                    onClick = {
+                        cerrando = true
+                        mostrarDialogoLogout = false
+                        viewModelAuth.cerrarSesionLocal(contexto)
+                        navController.navigate(Pantalla.Login.ruta) {
+                            popUpTo(0) { inclusive = true }
+                        }
                     }
-                    mostrarDialogoLogout = false
-                }) { Text("Cerrar sesión", color = MaterialTheme.colorScheme.error) }
+                ) { Text("Cerrar sesión", color = MaterialTheme.colorScheme.error) }
             },
             dismissButton = {
                 TextButton(onClick = { mostrarDialogoLogout = false }) { Text("Cancelar") }
@@ -67,6 +73,17 @@ fun PantallaInicio(
     val sintomas by viewModelSintoma.sintomas.collectAsState()
     val doctores by viewModelDoctor.doctores.collectAsState()
 
+    val estadoAuth by viewModelAuth.estado.collectAsState()
+
+    LaunchedEffect(estadoAuth.userId) {
+        if (estadoAuth.userId.isNotBlank()) {
+            viewModelMedicamento.cargarMedicamentos(estadoAuth.userId)
+            viewModelCita.cargarCitas(estadoAuth.userId)
+            viewModelSintoma.cargarSintomas(estadoAuth.userId)
+            viewModelDoctor.cargarDoctores(estadoAuth.userId)
+        }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -77,7 +94,9 @@ fun PantallaInicio(
                 ),
                 actions = {
                     IconButton(
-                        onClick = { mostrarDialogoLogout = true }
+                        onClick = {
+                            if (!cerrando) mostrarDialogoLogout = true  // ← AÑADIR guard
+                        }
                     ) {
                         Icon(
                             Icons.Default.Logout,
@@ -97,7 +116,6 @@ fun PantallaInicio(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Bienvenida
             Text(
                 text = "¡Bienvenido!",
                 style = MaterialTheme.typography.headlineMedium,
@@ -111,7 +129,6 @@ fun PantallaInicio(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Tarjetas de resumen
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -154,7 +171,6 @@ fun PantallaInicio(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Sección de accesos rápidos
             Text(
                 text = "Accesos rápidos",
                 style = MaterialTheme.typography.titleMedium,
@@ -167,28 +183,24 @@ fun PantallaInicio(
                 descripcion = "Gestiona tus medicamentos y dosis",
                 onClick = { navController.navigate(Pantalla.ListaMedicamentos.ruta) }
             )
-
             BotonNavegacion(
                 icono = Icons.Default.CalendarMonth,
                 titulo = "Citas Médicas",
                 descripcion = "Consulta y agenda tus citas",
                 onClick = { navController.navigate(Pantalla.ListaCitas.ruta) }
             )
-
             BotonNavegacion(
                 icono = Icons.Default.MonitorHeart,
                 titulo = "Síntomas",
                 descripcion = "Registra y controla tus síntomas",
                 onClick = { navController.navigate(Pantalla.ListaSintomas.ruta) }
             )
-
             BotonNavegacion(
                 icono = Icons.Default.Person,
                 titulo = "Mis Doctores",
                 descripcion = "Gestiona tus contactos médicos",
                 onClick = { navController.navigate(Pantalla.ListaDoctores.ruta) }
             )
-
             BotonNavegacion(
                 icono = Icons.Default.Search,
                 titulo = "Buscar Medicamentos",

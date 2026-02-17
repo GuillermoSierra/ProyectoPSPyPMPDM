@@ -7,6 +7,12 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface SintomaDao {
 
+    @Query("SELECT * FROM sintomas WHERE userId = :userId ORDER BY id DESC")
+    fun obtenerTodosSintomas(userId: String): Flow<List<Sintoma>>
+
+    @Query("SELECT * FROM sintomas WHERE id = :id")
+    fun obtenerSintomaPorId(id: Int): Flow<Sintoma?>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertar(sintoma: Sintoma)
 
@@ -15,13 +21,4 @@ interface SintomaDao {
 
     @Delete
     suspend fun eliminar(sintoma: Sintoma)
-
-    @Query("SELECT * FROM sintomas ORDER BY fecha DESC, hora DESC")
-    fun obtenerTodosSintomas(): Flow<List<Sintoma>>
-
-    @Query("SELECT * FROM sintomas WHERE id = :id")
-    fun obtenerSintomaPorId(id: Int): Flow<Sintoma?>
-
-    @Query("SELECT * FROM sintomas WHERE nombre LIKE '%' || :busqueda || '%'")
-    fun buscarSintomas(busqueda: String): Flow<List<Sintoma>>
 }
