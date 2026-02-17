@@ -1,5 +1,6 @@
 package com.guillermo.healthcare.ui.screens.busqueda
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -15,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.guillermo.healthcare.data.remote.dto.MedicamentoDto
+import com.guillermo.healthcare.ui.navigation.Pantalla
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -23,6 +25,39 @@ fun PantallaBusqueda(
     viewModel: ViewModelBusqueda = hiltViewModel()
 ) {
     val estado by viewModel.estado.collectAsState()
+    var medicamentoSeleccionado by remember { mutableStateOf<MedicamentoDto?>(null) }
+    var mostrarDialogo by remember { mutableStateOf(false) }
+
+    if (mostrarDialogo && medicamentoSeleccionado != null) {
+        AlertDialog(
+            onDismissRequest = { mostrarDialogo = false },
+            title = { Text("Añadir medicamento") },
+            text = {
+                Text("¿Quieres añadir ${medicamentoSeleccionado?.nombreMarca ?: medicamentoSeleccionado?.nombreGenerico ?: "este medicamento"} a tu lista?")
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        mostrarDialogo = false
+                        // Navegar al formulario con datos precargados
+                        val nombre = medicamentoSeleccionado?.nombreMarca
+                            ?: medicamentoSeleccionado?.nombreGenerico
+                            ?: ""
+                        val ruta = Pantalla.FormularioMedicamento.crearRuta() +
+                                "?nombre=${java.net.URLEncoder.encode(nombre, "UTF-8")}"
+                        navController.navigate(ruta)
+                    }
+                ) {
+                    Text("Añadir")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { mostrarDialogo = false }) {
+                    Text("Cancelar")
+                }
+            }
+        )
+    }
 
     Scaffold(
         topBar = {
@@ -119,7 +154,13 @@ fun PantallaBusqueda(
 
                     LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         items(estado.resultados) { medicamento ->
-                            TarjetaResultadoAPI(medicamento = medicamento)
+                            TarjetaResultadoAPI(
+                                medicamento = medicamento,
+                                onClick = {
+                                    medicamentoSeleccionado = medicamento
+                                    mostrarDialogo = true
+                                }
+                            )
                         }
                     }
                 }
@@ -142,9 +183,14 @@ fun PantallaBusqueda(
 }
 
 @Composable
-fun TarjetaResultadoAPI(medicamento: MedicamentoDto) {
+fun TarjetaResultadoAPI(
+    medicamento: MedicamentoDto,
+    onClick: () -> Unit
+) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() },
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
@@ -196,6 +242,14 @@ fun TarjetaResultadoAPI(medicamento: MedicamentoDto) {
                     )
                 }
             }
+
+            // Indicador visual de que es clickeable
+            Text(
+                text = "Toca para añadir",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = FontWeight.Bold
+            )
         }
     }
 }

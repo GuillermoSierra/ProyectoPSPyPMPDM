@@ -11,10 +11,16 @@ sealed class Pantalla(val ruta: String) {
     object DetalleMedicamento : Pantalla("detalle_medicamento/{medicamentoId}") {
         fun crearRuta(medicamentoId: Int) = "detalle_medicamento/$medicamentoId"
     }
-    object FormularioMedicamento : Pantalla("formulario_medicamento?medicamentoId={medicamentoId}") {
-        fun crearRuta(medicamentoId: Int? = null) =
-            if (medicamentoId != null) "formulario_medicamento?medicamentoId=$medicamentoId"
+    object FormularioMedicamento : Pantalla("formulario_medicamento?medicamentoId={medicamentoId}&nombre={nombre}") {
+        fun crearRuta(medicamentoId: Int? = null, nombre: String? = null): String {
+            var ruta = if (medicamentoId != null) "formulario_medicamento?medicamentoId=$medicamentoId"
             else "formulario_medicamento"
+
+            if (nombre != null) {
+                ruta += if (medicamentoId != null) "&nombre=$nombre" else "?nombre=$nombre"
+            }
+            return ruta
+        }
     }
 
     // Citas

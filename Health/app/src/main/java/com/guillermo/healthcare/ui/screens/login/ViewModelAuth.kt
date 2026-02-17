@@ -39,6 +39,7 @@ class ViewModelAuth @Inject constructor() : ViewModel() {
         WebAuthProvider.login(auth0)
             .withScheme("com.guillermo.healthcare")
             .withScope("openid profile email")
+            .withParameters(mapOf("prompt" to "login"))
             .start(context, object : Callback<Credentials, AuthenticationException> {
                 override fun onSuccess(result: Credentials) {
                     val userId = result.user.getId() ?: ""

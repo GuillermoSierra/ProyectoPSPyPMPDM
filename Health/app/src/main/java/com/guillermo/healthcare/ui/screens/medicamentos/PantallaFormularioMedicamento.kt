@@ -25,12 +25,13 @@ fun PantallaFormularioMedicamento(
     medicamentoId: Int?,
     userId: String,
     navController: NavController,
+    nombrePrecargado: String? = null,
     viewModel: ViewModelMedicamento = hiltViewModel()
 ) {
     val contexto = LocalContext.current
     val calendar = Calendar.getInstance()
 
-    var nombre by remember { mutableStateOf("") }
+    var nombre by remember { mutableStateOf(nombrePrecargado ?: "") }
     var dosis by remember { mutableStateOf("") }
     var frecuencia by remember { mutableStateOf("") }
     var fechaInicio by remember { mutableStateOf("") }
@@ -65,6 +66,15 @@ fun PantallaFormularioMedicamento(
         calendar.get(Calendar.DAY_OF_MONTH)
     ).apply {
         datePicker.minDate = calendar.timeInMillis
+    }
+
+    LaunchedEffect(Unit) {
+        val nombreBusqueda = navController.currentBackStackEntry
+            ?.arguments
+            ?.getString("nombre")
+        if (nombreBusqueda != null && medicamentoId == null) {
+            nombre = nombreBusqueda
+        }
     }
 
     LaunchedEffect(medicamentoId) {

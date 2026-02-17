@@ -67,6 +67,7 @@ fun GrafoNavegacion(
                 viewModelAuth = viewModelAuth
             )
         }
+
         composable(
             route = Pantalla.DetalleMedicamento.ruta,
             arguments = listOf(navArgument("medicamentoId") { type = NavType.IntType })
@@ -74,18 +75,28 @@ fun GrafoNavegacion(
             val id = backStackEntry.arguments?.getInt("medicamentoId") ?: 0
             PantallaDetalleMedicamento(medicamentoId = id, navController = navController)
         }
+
         composable(
             route = Pantalla.FormularioMedicamento.ruta,
-            arguments = listOf(navArgument("medicamentoId") {
-                type = NavType.IntType
-                defaultValue = -1
-            })
+            arguments = listOf(
+                navArgument("medicamentoId") {
+                    type = NavType.IntType
+                    defaultValue = -1
+                },
+                navArgument("nombre") {  // ← AÑADIR
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = null
+                }
+            )
         ) { backStackEntry ->
             val id = backStackEntry.arguments?.getInt("medicamentoId") ?: -1
+            val nombrePrecargado = backStackEntry.arguments?.getString("nombre")
             PantallaFormularioMedicamento(
                 medicamentoId = if (id == -1) null else id,
                 userId = userId,
-                navController = navController
+                navController = navController,
+                nombrePrecargado = nombrePrecargado
             )
         }
 
