@@ -51,4 +51,6 @@ sealed class Pantalla(val ruta: String) {
     }
 
     object Busqueda : Pantalla("busqueda")
+
+    object Perfil : Pantalla("perfil")
 }

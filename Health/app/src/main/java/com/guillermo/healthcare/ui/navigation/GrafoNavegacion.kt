@@ -24,6 +24,7 @@ import com.guillermo.healthcare.ui.screens.doctores.PantallaListaDoctores
 import com.guillermo.healthcare.ui.screens.doctores.PantallaDetalleDoctor
 import com.guillermo.healthcare.ui.screens.doctores.PantallaFormularioDoctor
 import com.guillermo.healthcare.ui.screens.busqueda.PantallaBusqueda
+import com.guillermo.healthcare.ui.screens.perfil.PantallaPerfil
 
 @Composable
 fun GrafoNavegacion(
@@ -47,6 +48,13 @@ fun GrafoNavegacion(
 
         composable(route = Pantalla.Inicio.ruta) {
             PantallaInicio(
+                navController = navController,
+                viewModelAuth = viewModelAuth
+            )
+        }
+
+        composable(route = Pantalla.Perfil.ruta) {
+            PantallaPerfil(
                 navController = navController,
                 viewModelAuth = viewModelAuth
             )

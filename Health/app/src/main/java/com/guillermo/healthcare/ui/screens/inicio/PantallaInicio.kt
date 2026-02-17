@@ -42,7 +42,8 @@ fun PantallaInicio(
     val contexto = LocalContext.current
 
     var mostrarDialogoLogout by remember { mutableStateOf(false) }
-    var cerrando by remember { mutableStateOf(false) }  // ← AÑADIR
+    var cerrando by remember { mutableStateOf(false) }
+    var mostrarMenu by remember { mutableStateOf(false) }  // ← AÑADIDO
 
     if (mostrarDialogoLogout) {
         AlertDialog(
@@ -93,16 +94,41 @@ fun PantallaInicio(
                     titleContentColor = MaterialTheme.colorScheme.onPrimary
                 ),
                 actions = {
-                    IconButton(
-                        onClick = {
-                            if (!cerrando) mostrarDialogoLogout = true  // ← AÑADIR guard
+                    Box {  // ← CAMBIADO: Box con DropdownMenu
+                        IconButton(
+                            onClick = { if (!cerrando) mostrarMenu = true }
+                        ) {
+                            Icon(
+                                Icons.Default.AccountCircle,  // ← icono persona
+                                contentDescription = "Perfil",
+                                tint = MaterialTheme.colorScheme.onPrimary
+                            )
                         }
-                    ) {
-                        Icon(
-                            Icons.Default.Logout,
-                            contentDescription = "Cerrar sesión",
-                            tint = MaterialTheme.colorScheme.onPrimary
-                        )
+                        DropdownMenu(
+                            expanded = mostrarMenu,
+                            onDismissRequest = { mostrarMenu = false }
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text("Ver perfil") },
+                                leadingIcon = {
+                                    Icon(Icons.Default.Person, contentDescription = null)
+                                },
+                                onClick = {
+                                    mostrarMenu = false
+                                    navController.navigate(Pantalla.Perfil.ruta)
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = { Text("Cerrar sesión") },
+                                leadingIcon = {
+                                    Icon(Icons.Default.Logout, contentDescription = null)
+                                },
+                                onClick = {
+                                    mostrarMenu = false
+                                    mostrarDialogoLogout = true
+                                }
+                            )
+                        }
                     }
                 }
             )
