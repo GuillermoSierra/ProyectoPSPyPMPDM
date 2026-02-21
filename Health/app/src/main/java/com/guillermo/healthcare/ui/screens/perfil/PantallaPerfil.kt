@@ -53,7 +53,6 @@ fun PantallaPerfil(
         ) {
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Avatar círculo con inicial
             Box(
                 modifier = Modifier
                     .size(100.dp)
@@ -79,7 +78,6 @@ fun PantallaPerfil(
                 fontWeight = FontWeight.Bold
             )
 
-            // Tarjeta con datos
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
@@ -99,7 +97,6 @@ fun PantallaPerfil(
 
                     Divider()
 
-                    // Nombre
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -124,7 +121,6 @@ fun PantallaPerfil(
 
                     Divider()
 
-                    // Email
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -149,7 +145,6 @@ fun PantallaPerfil(
                 }
             }
 
-            // Autenticado con Auth0
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(

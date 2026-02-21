@@ -4,9 +4,13 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -39,7 +43,6 @@ fun PantallaBusqueda(
                 TextButton(
                     onClick = {
                         mostrarDialogo = false
-                        // Navegar al formulario con datos precargados
                         val nombre = medicamentoSeleccionado?.nombreMarca
                             ?: medicamentoSeleccionado?.nombreGenerico
                             ?: ""
@@ -54,6 +57,53 @@ fun PantallaBusqueda(
             dismissButton = {
                 TextButton(onClick = { mostrarDialogo = false }) {
                     Text("Cancelar")
+                }
+            }
+        )
+    }
+
+    if (estado.etiquetaDetalle.isNotEmpty()) {
+        val etiqueta = estado.etiquetaDetalle.first()
+        AlertDialog(
+            onDismissRequest = { viewModel.limpiarDetalle() },
+            title = { Text("Información detallada") },
+            text = {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    etiqueta.proposito?.firstOrNull()?.let {
+                        Text(
+                            text = "Propósito:",
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(it)
+                    }
+
+                    etiqueta.advertencias?.firstOrNull()?.let {
+                        Spacer(Modifier.height(8.dp))
+                        Text(
+                            text = "Advertencias:",
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(it)
+                    }
+
+                    etiqueta.dosisAdministracion?.firstOrNull()?.let {
+                        Spacer(Modifier.height(8.dp))
+                        Text(
+                            text = "Dosis y Administración:",
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(it)
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { viewModel.limpiarDetalle() }) {
+                    Text("Cerrar")
                 }
             }
         )
@@ -78,7 +128,6 @@ fun PantallaBusqueda(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Barra de búsqueda
             OutlinedTextField(
                 value = estado.consulta,
                 onValueChange = { viewModel.actualizarConsulta(it) },
@@ -93,7 +142,6 @@ fun PantallaBusqueda(
                 singleLine = true
             )
 
-            // Botón buscar
             Button(
                 onClick = { viewModel.buscarMedicamentos() },
                 modifier = Modifier.fillMaxWidth(),
@@ -104,7 +152,6 @@ fun PantallaBusqueda(
                 Text("Buscar en OpenFDA")
             }
 
-            // Estados
             when {
                 estado.cargando -> {
                     Box(
@@ -159,6 +206,9 @@ fun PantallaBusqueda(
                                 onClick = {
                                     medicamentoSeleccionado = medicamento
                                     mostrarDialogo = true
+                                },
+                                onVerMas = {
+                                    viewModel.obtenerDetalle(medicamento.nombreMarca ?: "")
                                 }
                             )
                         }
@@ -185,12 +235,11 @@ fun PantallaBusqueda(
 @Composable
 fun TarjetaResultadoAPI(
     medicamento: MedicamentoDto,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onVerMas: () -> Unit
 ) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() },
+        modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
@@ -243,13 +292,28 @@ fun TarjetaResultadoAPI(
                 }
             }
 
-            // Indicador visual de que es clickeable
-            Text(
-                text = "Toca para añadir",
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.primary,
-                fontWeight = FontWeight.Bold
-            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                OutlinedButton(
+                    onClick = onVerMas,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Icon(Icons.Default.Info, contentDescription = null)
+                    Spacer(Modifier.width(4.dp))
+                    Text("Ver más")
+                }
+                Button(
+                    onClick = onClick,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Icon(Icons.Default.Add, contentDescription = null)
+                    Spacer(Modifier.width(4.dp))
+                    Text("Añadir")
+                }
+            }
         }
     }
 }

@@ -5,7 +5,6 @@ import com.guillermo.healthcare.data.local.entity.Doctor
 import com.guillermo.healthcare.data.local.entity.Medicamento
 import com.guillermo.healthcare.data.local.entity.Sintoma
 
-// Medicamento
 fun Medicamento.aModelo() = ModeloMedicamento(
     id = id,
     nombre = nombre,
@@ -26,7 +25,6 @@ fun ModeloMedicamento.aEntidad() = Medicamento(
     notas = notas
 )
 
-// Cita
 fun Cita.aModelo() = ModeloCita(
     id = id,
     nombreDoctor = nombreDoctor,
@@ -47,7 +45,6 @@ fun ModeloCita.aEntidad() = Cita(
     notas = notas
 )
 
-// Sintoma
 fun Sintoma.aModelo() = ModeloSintoma(
     id = id,
     nombre = nombre,
@@ -68,7 +65,6 @@ fun ModeloSintoma.aEntidad() = Sintoma(
     desencadenantes = desencadenantes
 )
 
-// Doctor
 fun Doctor.aModelo() = ModeloDoctor(
     id = id,
     nombre = nombre,

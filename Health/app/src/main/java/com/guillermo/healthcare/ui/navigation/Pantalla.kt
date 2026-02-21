@@ -2,11 +2,9 @@ package com.guillermo.healthcare.ui.navigation
 
 sealed class Pantalla(val ruta: String) {
 
-    // Login
     object Login : Pantalla("login")
     object Inicio : Pantalla("inicio")
 
-    // Medicamentos
     object ListaMedicamentos : Pantalla("lista_medicamentos")
     object DetalleMedicamento : Pantalla("detalle_medicamento/{medicamentoId}") {
         fun crearRuta(medicamentoId: Int) = "detalle_medicamento/$medicamentoId"
@@ -23,7 +21,6 @@ sealed class Pantalla(val ruta: String) {
         }
     }
 
-    // Citas
     object ListaCitas : Pantalla("lista_citas")
     object DetalleCita : Pantalla("detalle_cita/{citaId}") {
         fun crearRuta(citaId: Int) = "detalle_cita/$citaId"
@@ -34,7 +31,6 @@ sealed class Pantalla(val ruta: String) {
             else "formulario_cita"
     }
 
-    // Síntomas
     object ListaSintomas : Pantalla("lista_sintomas")
     object DetalleSintoma : Pantalla("detalle_sintoma/{sintomaId}") {
         fun crearRuta(sintomaId: Int) = "detalle_sintoma/$sintomaId"
@@ -45,7 +41,6 @@ sealed class Pantalla(val ruta: String) {
             else "formulario_sintoma"
     }
 
-    // Doctores
     object ListaDoctores : Pantalla("lista_doctores")
     object DetalleDoctor : Pantalla("detalle_doctor/{doctorId}") {
         fun crearRuta(doctorId: Int) = "detalle_doctor/$doctorId"

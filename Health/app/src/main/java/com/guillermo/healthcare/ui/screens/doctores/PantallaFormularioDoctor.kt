@@ -137,16 +137,13 @@ fun PantallaFormularioDoctor(
 
             Button(
                 onClick = {
-                    // Validaciones
                     errorNombre = nombre.isBlank()
                     errorEspecialidad = especialidad.isBlank()
                     errorDireccion = direccion.isBlank()
 
-                    // Validación teléfono - exactamente 9 dígitos
                     val telefonoValido = telefono.matches(Regex("^[0-9]{9}$"))
                     errorTelefono = telefono.isBlank() || !telefonoValido
 
-                    // Validación email - formato correcto si no está vacío
                     val emailValido = email.isBlank() || email.matches(
                         Regex("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")
                     )

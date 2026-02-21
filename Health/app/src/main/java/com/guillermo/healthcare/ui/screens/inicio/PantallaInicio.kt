@@ -43,7 +43,7 @@ fun PantallaInicio(
 
     var mostrarDialogoLogout by remember { mutableStateOf(false) }
     var cerrando by remember { mutableStateOf(false) }
-    var mostrarMenu by remember { mutableStateOf(false) }  // ← AÑADIDO
+    var mostrarMenu by remember { mutableStateOf(false) }
 
     if (mostrarDialogoLogout) {
         AlertDialog(
@@ -94,12 +94,12 @@ fun PantallaInicio(
                     titleContentColor = MaterialTheme.colorScheme.onPrimary
                 ),
                 actions = {
-                    Box {  // ← CAMBIADO: Box con DropdownMenu
+                    Box {
                         IconButton(
                             onClick = { if (!cerrando) mostrarMenu = true }
                         ) {
                             Icon(
-                                Icons.Default.AccountCircle,  // ← icono persona
+                                Icons.Default.AccountCircle,
                                 contentDescription = "Perfil",
                                 tint = MaterialTheme.colorScheme.onPrimary
                             )

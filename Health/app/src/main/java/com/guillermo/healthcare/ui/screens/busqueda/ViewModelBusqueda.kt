@@ -2,6 +2,7 @@ package com.guillermo.healthcare.ui.screens.busqueda
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.guillermo.healthcare.data.remote.dto.EtiquetaDto
 import com.guillermo.healthcare.data.remote.dto.MedicamentoDto
 import com.guillermo.healthcare.data.repository.RepositorioOpenFDA
 import com.guillermo.healthcare.data.repository.ResultadoApi
@@ -13,10 +14,12 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class EstadoBusqueda(
-    val cargando: Boolean = false,
+    val consulta: String = "",
     val resultados: List<MedicamentoDto> = emptyList(),
-    val error: String? = null,
-    val consulta: String = ""
+    val etiquetaDetalle: List<EtiquetaDto> = emptyList(),
+    val cargando: Boolean = false,
+    val cargandoDetalle: Boolean = false,
+    val error: String? = null
 )
 
 @HiltViewModel
@@ -64,5 +67,30 @@ class ViewModelBusqueda @Inject constructor(
 
     fun limpiarBusqueda() {
         _estado.value = EstadoBusqueda()
+    }
+
+    fun obtenerDetalle(nombreMedicamento: String) {
+        viewModelScope.launch {
+            _estado.value = _estado.value.copy(cargandoDetalle = true)
+            when (val resultado = repositorio.obtenerEtiquetaMedicamento(nombreMedicamento)) {
+                is ResultadoApi.Exito -> {
+                    _estado.value = _estado.value.copy(
+                        etiquetaDetalle = resultado.datos,
+                        cargandoDetalle = false
+                    )
+                }
+                is ResultadoApi.Error -> {
+                    _estado.value = _estado.value.copy(
+                        cargandoDetalle = false,
+                        error = resultado.mensaje
+                    )
+                }
+                else -> {}
+            }
+        }
+    }
+
+    fun limpiarDetalle() {
+        _estado.value = _estado.value.copy(etiquetaDetalle = emptyList())
     }
 }

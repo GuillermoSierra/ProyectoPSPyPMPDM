@@ -33,7 +33,6 @@ class RepositorioOpenFDA @Inject constructor(
         }
     }
 
-    // Endpoint disponible para obtener información detallada por nombre de medicamento
     suspend fun obtenerEtiquetaMedicamento(nombre: String): ResultadoApi<List<EtiquetaDto>> {
         return try {
             val respuesta = cliente.api.obtenerEtiquetaMedicamento("openfda.brand_name:$nombre")

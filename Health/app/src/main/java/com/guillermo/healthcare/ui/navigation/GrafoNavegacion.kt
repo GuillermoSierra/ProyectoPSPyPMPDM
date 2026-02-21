@@ -60,7 +60,6 @@ fun GrafoNavegacion(
             )
         }
 
-        // Medicamentos
         composable(route = Pantalla.ListaMedicamentos.ruta) {
             PantallaListaMedicamentos(
                 navController = navController,
@@ -83,7 +82,7 @@ fun GrafoNavegacion(
                     type = NavType.IntType
                     defaultValue = -1
                 },
-                navArgument("nombre") {  // ← AÑADIR
+                navArgument("nombre") {
                     type = NavType.StringType
                     nullable = true
                     defaultValue = null
@@ -100,7 +99,6 @@ fun GrafoNavegacion(
             )
         }
 
-        // Citas
         composable(route = Pantalla.ListaCitas.ruta) {
             PantallaListaCitas(
                 navController = navController,
@@ -129,7 +127,6 @@ fun GrafoNavegacion(
             )
         }
 
-        // Síntomas
         composable(route = Pantalla.ListaSintomas.ruta) {
             PantallaListaSintomas(
                 navController = navController,
@@ -158,7 +155,6 @@ fun GrafoNavegacion(
             )
         }
 
-        // Doctores
         composable(route = Pantalla.ListaDoctores.ruta) {
             PantallaListaDoctores(
                 navController = navController,

@@ -139,7 +139,6 @@ fun PantallaFormularioSintoma(
                 supportingText = if (errorIntensidad) {{ Text("Introduce un valor entre 1 y 10") }} else null
             )
 
-            // Fecha con DatePicker
             OutlinedTextField(
                 value = fecha,
                 onValueChange = {},
@@ -163,7 +162,6 @@ fun PantallaFormularioSintoma(
                 )
             )
 
-            // Hora con TimePicker
             OutlinedTextField(
                 value = hora,
                 onValueChange = {},

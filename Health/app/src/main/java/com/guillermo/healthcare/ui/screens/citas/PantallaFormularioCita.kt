@@ -65,7 +65,6 @@ fun PantallaFormularioCita(
                 set(Calendar.HOUR_OF_DAY, hour)
                 set(Calendar.MINUTE, minute)
             }
-            // Si la fecha es hoy, validar que la hora no sea pasada
             if (fecha == String.format("%04d-%02d-%02d",
                     ahora.get(Calendar.YEAR),
                     ahora.get(Calendar.MONTH) + 1,
