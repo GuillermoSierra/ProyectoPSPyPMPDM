@@ -11,7 +11,7 @@ Proyecto final del ciclo de Desarrollo de Aplicaciones Multiplataforma (DAM).
 - **Calendario de citas médicas** con recordatorios
 - **Registro de síntomas** con nivel de intensidad y seguimiento temporal
 - **Directorio de doctores** con información de contacto
-- **Búsqueda de medicamentos** en la base de datos OpenFDA
+- **Búsqueda de medicamentos** en la base de datos OpenFDA con 2 endpoints
 - **Sistema multi-usuario** con datos aislados por cuenta
 - **Persistencia local** con Room Database
 - **Arquitectura MVVM** con Clean Architecture
@@ -20,7 +20,7 @@ Proyecto final del ciclo de Desarrollo de Aplicaciones Multiplataforma (DAM).
 
 ### Core
 - **Kotlin** - Lenguaje de programación
-- **Jetpack Compose** - Framework UI declarativo
+- **Jetpack Compose** - Framework UI declarativo (14 pantallas)
 - **Material Design 3** - Sistema de diseño
 
 ### Arquitectura
@@ -29,7 +29,7 @@ Proyecto final del ciclo de Desarrollo de Aplicaciones Multiplataforma (DAM).
 - **Inyección de dependencias** con Hilt/Dagger
 
 ### Persistencia
-- **Room** - Base de datos local SQLite
+- **Room** - Base de datos local SQLite (4 entidades con CRUD completo)
 - **Coroutines** y **Flow** - Programación asíncrona reactiva
 - **SharedPreferences** - Almacenamiento de sesión de usuario
 
@@ -37,12 +37,14 @@ Proyecto final del ciclo de Desarrollo de Aplicaciones Multiplataforma (DAM).
 - **Retrofit2** - Cliente HTTP para consumo de API REST
 - **Gson** - Serialización/deserialización JSON
 - **OkHttp** - Interceptores y logging de red
+- **OpenFDA API** - 2 endpoints: búsqueda de medicamentos + información detallada
 
 ### Autenticación
 - **Auth0** - Servicio de autenticación OAuth2/OIDC
+- **Persistencia de sesión** con SharedPreferences
 
 ### Navegación
-- **Navigation Compose** - Navegación entre pantallas
+- **Navigation Compose** - Navegación entre pantallas tipo-segura
 
 ## Requisitos Previos
 
@@ -51,32 +53,62 @@ Proyecto final del ciclo de Desarrollo de Aplicaciones Multiplataforma (DAM).
 - SDK de Android 24 (Android 7.0) o superior
 - Cuenta de Auth0 configurada
 
+## Descargar e Instalar
+
+### APK Release
+
+El APK firmado y listo para instalar está disponible en:
+```
+Health/app/release/app-release.apk
+```
+
+También puedes descargarlo directamente desde GitHub:
+[Descargar APK](https://github.com/GuillermoSierra/ProyectoPSPyPMPDM/tree/main/Health/app/release)
+
+### Instalación en Dispositivo Android
+
+1. Descarga el archivo `app-release.apk` desde el repositorio
+2. En tu dispositivo Android, ve a: **Configuración > Seguridad**
+3. Activa la opción **"Instalar aplicaciones desconocidas"** o **"Fuentes desconocidas"**
+4. Abre el archivo APK descargado
+5. Toca **"Instalar"** y espera a que se complete la instalación
+6. Abre HealthCare desde el cajón de aplicaciones
+7. Haz login con Auth0 (se abrirá el navegador)
+8. Ya puedes usar la aplicación
+
+### Ejecución desde Android Studio (Desarrollo)
+
+1. Clona el repositorio:
+```bash
+git clone https://github.com/GuillermoSierra/ProyectoPSPyPMPDM.git
+cd ProyectoPSPyPMPDM/Health
+```
+
+2. Abre el proyecto en Android Studio
+
+3. Sincroniza Gradle (Build > Sync Project with Gradle Files)
+
+4. Ejecuta la aplicación (Run > Run 'app' o Shift+F10)
+
 ## Configuración de Auth0
+
+La aplicación está configurada con las siguientes credenciales de Auth0:
+
+- **Domain**: `dev-bbezl7kkcc25rf77.us.auth0.com`
+- **Client ID**: `4ehLNq9ezzcqisqrwGPW7dH5qaa1M3D8`
+- **Callback URL**: `com.guillermo.healthcare://dev-bbezl7kkcc25rf77.us.auth0.com/android/com.guillermo.healthcare/callback`
+
+### Configurar con tu propia cuenta de Auth0
+
+Si deseas usar tu propia cuenta de Auth0:
 
 1. Crear una cuenta en [Auth0](https://auth0.com)
 2. Crear una nueva aplicación de tipo "Native"
-3. Configurar los siguientes valores en el Dashboard de Auth0:
-    - **Allowed Callback URLs**: `com.guillermo.healthcare://dev-bbezl7kkcc25rf77.us.auth0.com/android/com.guillermo.healthcare/callback`
-    - **Allowed Logout URLs**: `com.guillermo.healthcare://dev-bbezl7kkcc25rf77.us.auth0.com/android/com.guillermo.healthcare/callback`
-4. Activar en Database Settings: "Requires Username" (opcional, para personalización de nombre de usuario)
-
-## Instalación
-
-### Clonar el Repositorio
-
-```bash
-git clone https://github.com/tu-usuario/healthcare.git
-cd healthcare
-```
-
-### Configurar Credenciales de Auth0
-
-Editar el archivo `ViewModelAuth.kt` ubicado en:
-```
-app/src/main/java/com/guillermo/healthcare/ui/screens/login/ViewModelAuth.kt
-```
-
-Reemplazar las credenciales de Auth0 con las de tu cuenta:
+3. Configurar en el Dashboard de Auth0:
+    - **Allowed Callback URLs**: `com.guillermo.healthcare://TU_DOMAIN.auth0.com/android/com.guillermo.healthcare/callback`
+    - **Allowed Logout URLs**: `com.guillermo.healthcare://TU_DOMAIN.auth0.com/android/com.guillermo.healthcare/callback`
+4. Activar en Database Settings: "Requires Username" (opcional)
+5. Editar el archivo `ViewModelAuth.kt`:
 ```kotlin
 private val auth0 = Auth0(
     "TU_CLIENT_ID",
@@ -84,11 +116,31 @@ private val auth0 = Auth0(
 )
 ```
 
-### Compilar y Ejecutar
+## Información de Keystore (Para Desarrolladores)
 
-1. Abrir el proyecto en Android Studio
-2. Sincronizar el proyecto con Gradle
-3. Ejecutar en un emulador o dispositivo físico
+Si necesitas generar un nuevo APK release o actualizar la aplicación:
+
+**Archivo Keystore**: `healthcare_keystore.jks`  
+**Ubicación**: Raíz del proyecto  
+**Password del Keystore**: `healthcare2026`  
+**Key Alias**: `key0`  
+**Password del Alias**: `healthcare2026`  
+**Validez**: 25 años
+
+### Generar APK Release
+
+1. Build > Generate Signed Bundle / APK
+2. Selecciona "APK"
+3. Key store path: selecciona `healthcare_keystore.jks`
+4. Introduce las contraseñas
+5. Build Variant: release
+6. Finish
+
+**IMPORTANTE**: Este keystore es solo para propósitos académicos. En un entorno de producción:
+- Usa un keystore con contraseñas seguras
+- NO lo compartas públicamente
+- Guárdalo en un lugar seguro
+- Considera usar Google Play App Signing
 
 ## Estructura del Proyecto
 
@@ -116,9 +168,9 @@ app/src/main/java/com/guillermo/healthcare/
 │   │
 │   ├── remote/                 # API externa (OpenFDA)
 │   │   ├── api/
-│   │   │   └── OpenFDAApi.kt          # Interfaz Retrofit con endpoints
+│   │   │   └── OpenFDAApi.kt          # Interfaz Retrofit con 2 endpoints
 │   │   ├── dto/
-│   │   │   └── MedicamentoDto.kt      # Data Transfer Object de API
+│   │   │   └── MedicamentoDto.kt      # Data Transfer Objects de API
 │   │   └── ClienteRetrofit.kt         # Configuración de Retrofit
 │   │
 │   └── repository/             # Repositorios (abstracción de fuentes de datos)
@@ -150,7 +202,7 @@ app/src/main/java/com/guillermo/healthcare/
     │   ├── GrafoNavegacion.kt         # Definición del grafo de navegación
     │   └── Pantalla.kt                # Rutas de navegación (sealed class)
     │
-    ├── screens/                # Pantallas de la aplicación
+    ├── screens/                # Pantallas de la aplicación (14 en total)
     │   ├── busqueda/           # Búsqueda de medicamentos en OpenFDA
     │   │   ├── PantallaBusqueda.kt
     │   │   └── ViewModelBusqueda.kt
@@ -195,399 +247,688 @@ app/src/main/java/com/guillermo/healthcare/
         └── Type.kt                    # Tipografía
 ```
 
-## Descripción de Componentes
+## Base de Datos Room
 
-### Capa de Datos (data/)
+### Las 4 Entidades
 
-#### local/dao/
-Interfaces que definen las operaciones CRUD para cada entidad. Room genera automáticamente la implementación.
-
-**MedicamentoDao.kt**
-- `getAllMedicamentos(userId: String)`: Obtiene medicamentos filtrados por usuario
-- `getMedicamentoById(id: Int)`: Obtiene un medicamento específico
-- `insert(medicamento: Medicamento)`: Inserta nuevo medicamento
-- `update(medicamento: Medicamento)`: Actualiza medicamento existente
-- `delete(medicamento: Medicamento)`: Elimina medicamento
-
-Funcionalidad similar en CitaDao, DoctorDao y SintomaDao.
-
-#### local/database/
-**BaseDatosSalud.kt**: Definición de la base de datos Room. Incluye:
-- Versión actual: 2
-- Migración 1→2: Añade campo `userId` a todas las tablas
-- Entities: Medicamento, Cita, Sintoma, Doctor
-
-**ModuloBaseDatos.kt**: Módulo de Hilt que proporciona la instancia singleton de la base de datos.
-
-#### local/entity/
-Clases de datos que representan las tablas de la base de datos.
-
-**Medicamento.kt**
+#### 1. Medicamento
 ```kotlin
 @Entity(tableName = "medicamentos")
 data class Medicamento(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    val userId: String,
+    val userId: String,        // Filtro multi-usuario
     val nombre: String,
     val dosis: String,
     val frecuencia: String,
-    val fechaInicio: String,
-    val fechaFin: String?,
+    val fechaInicio: String,   // Formato: YYYY-MM-DD
+    val fechaFin: String?,     // null = indefinido
     val notas: String?
 )
 ```
 
-Estructura similar en Cita, Sintoma y Doctor con sus campos específicos.
-
-#### remote/
-**OpenFDAApi.kt**: Interfaz Retrofit que define el endpoint de búsqueda de medicamentos.
-
-**MedicamentoDto.kt**: Objeto de transferencia de datos que mapea la respuesta JSON de OpenFDA.
-
-**ClienteRetrofit.kt**: Configuración de Retrofit con:
-- BaseUrl: "https://api.fda.gov/"
-- Conversor Gson para JSON
-- Logging interceptor para debug
-
-#### repository/
-Implementan el patrón Repository, abstrayendo las fuentes de datos (Room local o API remota).
-
-**RepositorioMedicamento.kt**
-- Proporciona Flow reactivo de medicamentos
-- Operaciones CRUD sobre el DAO
-- Filtra por userId del usuario autenticado
-
-**RepositorioOpenFDA.kt**
-- Realiza búsquedas en la API de la FDA
-- Manejo de errores de red y respuestas 404
-- Mapeo de DTOs a modelos de dominio
-
-### Capa de Dominio (domain/)
-
-#### model/
-Modelos de dominio que representan las entidades desde la perspectiva del negocio.
-
-**Mappers.kt**: Funciones de extensión para convertir entre Entities (Room) y Models (dominio).
-
+#### 2. Cita
 ```kotlin
-fun Medicamento.toModel() = ModeloMedicamento(...)
-fun ModeloMedicamento.toEntity() = Medicamento(...)
+@Entity(tableName = "citas")
+data class Cita(
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    val userId: String,
+    val nombreDoctor: String,
+    val especialidad: String,
+    val fecha: String,         // Formato: YYYY-MM-DD
+    val hora: String,          // Formato: HH:mm
+    val lugar: String,
+    val notas: String?
+)
 ```
 
-#### usecase/
-Casos de uso que encapsulan la lógica de negocio.
-
-**CasosUsoMedicamento.kt**
+#### 3. Sintoma
 ```kotlin
-class ObtenerMedicamentosUseCase @Inject constructor(
-    private val repositorio: RepositorioMedicamento
-) {
-    operator fun invoke(userId: String): Flow<List<ModeloMedicamento>>
-}
+@Entity(tableName = "sintomas")
+data class Sintoma(
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    val userId: String,
+    val nombre: String,
+    val intensidad: Int,       // Escala 1-10
+    val fecha: String,         // Formato: YYYY-MM-DD
+    val hora: String,          // Formato: HH:mm
+    val descripcion: String?
+)
 ```
 
-Incluye casos de uso para: obtener, insertar, actualizar, eliminar y obtener por ID.
+#### 4. Doctor
+```kotlin
+@Entity(tableName = "doctores")
+data class Doctor(
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    val userId: String,
+    val nombre: String,
+    val especialidad: String,
+    val telefono: String,
+    val email: String,
+    val direccion: String,
+    val notas: String?
+)
+```
 
-### Capa de UI (ui/)
+### Ubicación de la Base de Datos
 
-#### components/
-**ComponentesComunes.kt**: Componentes reutilizables.
+La base de datos Room se almacena en:
+```
+/data/data/com.guillermo.healthcare/databases/healthcare_database
+```
 
-**FilaDetalle**: Componente que muestra un par etiqueta-valor formateado para pantallas de detalle.
+**IMPORTANTE**: Esta ubicación está protegida por Android y solo es accesible:
+- Desde la propia aplicación
+- Con Database Inspector de Android Studio (versión debug)
+- Con Device File Explorer (solo en emulador o dispositivo con USB debugging)
 
-#### navigation/
-**Pantalla.kt**: Sealed class que define todas las rutas de la aplicación con tipado seguro.
+### Ver la Base de Datos con Database Inspector
+
+**Requisitos**:
+- Ejecutar la app desde Android Studio (versión debug)
+- Tener el dispositivo/emulador conectado
+
+**Pasos**:
+1. Android Studio → View → Tool Windows → App Inspection
+2. Selecciona la pestaña "Database Inspector"
+3. En el dropdown, selecciona el proceso de la app
+4. Expande: com.guillermo.healthcare → databases → healthcare_database
+5. Verás las 4 tablas: medicamentos, citas, sintomas, doctores
+6. Doble click en cualquier tabla para ver todas las filas
+7. Los cambios se reflejan EN TIEMPO REAL
+
+**Troubleshooting**:
+- Si aparece [DETACHED]: Para la app (Stop) y ejecútala de nuevo (Run)
+- Si no aparece la base de datos: Crea al menos un dato (medicamento, cita, etc.)
+- Si Database Inspector está vacío: Verifica que la app está en modo Debug, no Release
+
+### Migración de Base de Datos
+
+El proyecto incluye una migración de versión 1 a versión 2:
+
+**Cambio**: Añadir campo `userId` a todas las tablas para implementar sistema multi-usuario
 
 ```kotlin
-sealed class Pantalla(val ruta: String) {
-    object Login : Pantalla("login")
-    object Inicio : Pantalla("inicio")
-    object FormularioMedicamento : Pantalla("formulario_medicamento?medicamentoId={medicamentoId}&nombre={nombre}") {
-        fun crearRuta(medicamentoId: Int? = null, nombre: String? = null): String
+val MIGRATION_1_2 = object : Migration(1, 2) {
+    override fun migrate(database: SupportSQLiteDatabase) {
+        database.execSQL("ALTER TABLE medicamentos ADD COLUMN userId TEXT NOT NULL DEFAULT ''")
+        database.execSQL("ALTER TABLE citas ADD COLUMN userId TEXT NOT NULL DEFAULT ''")
+        database.execSQL("ALTER TABLE sintomas ADD COLUMN userId TEXT NOT NULL DEFAULT ''")
+        database.execSQL("ALTER TABLE doctores ADD COLUMN userId TEXT NOT NULL DEFAULT ''")
     }
-    // ...
 }
 ```
 
-**GrafoNavegacion.kt**: Define el NavHost con todas las rutas y composables asociados. Gestiona la inyección del ViewModelAuth compartido.
+## OpenFDA API - 2 Endpoints Implementados
 
-#### screens/
+### Endpoint 1: Búsqueda de Medicamentos
 
-##### login/
-**PantallaLogin.kt**: Pantalla de autenticación con Auth0.
-- Botón "Iniciar Sesión con Auth0"
-- Abre navegador para login/registro
-- Manejo de estados: cargando, error, autenticado
+**URL**: `GET https://api.fda.gov/drug/ndc.json`
 
-**ViewModelAuth.kt**: Gestiona el estado de autenticación.
-- `iniciarSesion(context)`: Inicia flujo de Auth0 con prompt=login
-- `cargarSesionGuardada(context)`: Restaura sesión desde SharedPreferences
-- `cerrarSesionLocal(context)`: Limpia sesión local
-- Estado: `EstadoAuth(userId, nombreUsuario, emailUsuario, autenticado, cargando, error)`
+**Parámetros**:
+- `search`: brand_name:NOMBRE* (búsqueda por nombre de marca)
+- `limit`: 10 (número máximo de resultados)
 
-##### inicio/
-**PantallaInicio.kt**: Dashboard principal con:
-- Resumen de datos (contadores de medicamentos, citas, síntomas, doctores)
-- Menú desplegable con perfil y cerrar sesión
-- Accesos rápidos a todas las funcionalidades
+**Respuesta**:
+```json
+{
+  "results": [
+    {
+      "brand_name": "Ibuprofen",
+      "generic_name": "IBUPROFEN",
+      "labeler_name": "Major Pharmaceuticals Inc.",
+      "route": ["ORAL"],
+      "dosage_form": "TABLET, COATED"
+    }
+  ]
+}
+```
 
-##### medicamentos/
-**PantallaListaMedicamentos.kt**: Lista de medicamentos del usuario.
-- LazyColumn con tarjetas clickeables
-- Navegación a detalle al hacer click
-- FAB para crear nuevo medicamento
+**Uso en la App**:
+- Pantalla de búsqueda permite buscar medicamentos por nombre
+- Resultados se muestran en lista con información básica
+- Al seleccionar un resultado, se puede añadir a la lista personal con el nombre precargado
 
-**PantallaFormularioMedicamento.kt**: Formulario de creación/edición.
-- Campos: nombre, dosis, frecuencia, fecha inicio, fecha fin, notas
-- DatePickers para fechas
-- Fecha inicio: permite fechas pasadas
-- Fecha fin: solo fechas desde hoy
-- Checkbox "Fecha fin indefinida" (oculta selector de fecha)
-- Validación de campos obligatorios
-- Puede recibir nombre precargado desde búsqueda de OpenFDA
+### Endpoint 2: Información Detallada del Medicamento
 
-**PantallaDetalleMedicamento.kt**: Vista detallada de un medicamento.
-- Muestra todos los campos
-- Fecha fin muestra "Indefinida" si es null
-- Botones: Editar, Eliminar (con confirmación)
+**URL**: `GET https://api.fda.gov/drug/label.json`
 
-**ViewModelMedicamento.kt**: Gestiona estado de medicamentos.
-- `medicamentos: StateFlow<List<Medicamento>>`: Lista reactiva
-- `medicamentoSeleccionado: StateFlow<Medicamento?>`: Para detalle/edición
-- `cargarMedicamentos(userId)`, `insertarMedicamento()`, etc.
+**Parámetros**:
+- `search`: openfda.brand_name:NOMBRE
+- `limit`: 5
 
-##### citas/
-Estructura similar a medicamentos.
+**Respuesta**:
+```json
+{
+  "results": [
+    {
+      "purpose": ["Pain reliever/fever reducer"],
+      "warnings": ["Allergy alert: Ibuprofen may cause severe allergic reaction..."],
+      "dosage_and_administration": ["Adults: Take 1-2 tablets every 4-6 hours..."]
+    }
+  ]
+}
+```
 
-**PantallaFormularioCita.kt**: Campos específicos.
-- Nombre del doctor, especialidad, fecha, hora, lugar, notas
-- DatePicker y TimePicker
+**Uso en la App**:
+- Botón "Ver más información" en resultados de búsqueda
+- Muestra diálogo con propósito, advertencias y dosificación
+- Información detallada para tomar decisiones informadas
 
-##### sintomas/
-Estructura similar a medicamentos.
+### Manejo de Errores de API
 
-**PantallaFormularioSintoma.kt**: Campos específicos.
-- Nombre del síntoma, intensidad (1-10 con Slider), fecha, hora, descripción
-
-##### doctores/
-Estructura similar a medicamentos.
-
-**PantallaFormularioDoctor.kt**: Campos específicos.
-- Nombre, especialidad, teléfono, email, dirección, notas
-
-##### busqueda/
-**PantallaBusqueda.kt**: Búsqueda de medicamentos en OpenFDA.
-- Campo de búsqueda con botón
-- Lista de resultados clickeables
-- Al hacer click: diálogo de confirmación
-- Si acepta: navega a formulario con nombre precargado
-
-**ViewModelBusqueda.kt**: Gestiona búsqueda en API.
-- `estado: EstadoBusqueda(consulta, resultados, cargando, error)`
-- `buscarMedicamentos()`: Llama a RepositorioOpenFDA
-
-##### perfil/
-**PantallaPerfil.kt**: Muestra información del usuario autenticado.
-- Avatar con inicial del nombre
-- Nombre y email desde Auth0
-- Indicador de autenticación
-
-#### theme/
-**Color.kt**: Paleta de colores de Material Design 3.
-
-**Theme.kt**: Configuración del tema con modo claro/oscuro.
-
-**Type.kt**: Tipografía de la aplicación.
+```kotlin
+try {
+    val respuesta = api.buscarMedicamentos(query, limit)
+    if (respuesta.resultados != null) {
+        ResultadoApi.Exito(respuesta.resultados)
+    } else {
+        ResultadoApi.Error("No se encontraron resultados")
+    }
+} catch (e: retrofit2.HttpException) {
+    if (e.code() == 404) {
+        ResultadoApi.Error("Medicamento no encontrado en FDA")
+    } else {
+        ResultadoApi.Error("Error del servidor: ${e.code()}")
+    }
+} catch (e: Exception) {
+    ResultadoApi.Error("Error de conexión: ${e.message}")
+}
+```
 
 ## Flujo de Datos
 
 ### Lectura (Ejemplo: Medicamentos)
 ```
 UI (PantallaListaMedicamentos)
-    ↓ collectAsState
+    ↓ collectAsState()
 ViewModel (ViewModelMedicamento)
-    ↓ StateFlow
+    ↓ StateFlow<List<Medicamento>>
 UseCase (ObtenerMedicamentosUseCase)
-    ↓ Flow
+    ↓ Flow<List<ModeloMedicamento>>
 Repository (RepositorioMedicamento)
-    ↓ Flow
+    ↓ Flow<List<Medicamento>>
 DAO (MedicamentoDao)
-    ↓ @Query
+    ↓ @Query("SELECT * FROM medicamentos WHERE userId = :userId")
 Room Database
+    ↓ Emite cambios automáticamente cuando se modifica la tabla
 ```
+
+**Reactividad**: Si insertas, actualizas o eliminas un medicamento,
+el Flow emite automáticamente la lista actualizada y la UI se recompone sin necesidad de recargar manualmente.
 
 ### Escritura (Ejemplo: Crear Medicamento)
 ```
 UI (PantallaFormularioMedicamento)
-    ↓ onClick
+    ↓ onClick del botón "Guardar"
+    ↓ Validación de campos
 ViewModel (ViewModelMedicamento.insertarMedicamento)
-    ↓ viewModelScope.launch
+    ↓ viewModelScope.launch (coroutine)
 UseCase (InsertarMedicamentoUseCase)
-    ↓ suspend
+    ↓ suspend fun
 Repository (RepositorioMedicamento.insertarMedicamento)
-    ↓ suspend
+    ↓ suspend fun
 DAO (MedicamentoDao.insert)
-    ↓ @Insert
+    ↓ @Insert suspend fun
 Room Database
-    ↓ Flow actualizado automáticamente
-UI se actualiza reactivamente
+    ↓ INSERT SQL ejecutado
+    ↓ Flow detecta cambio automáticamente
+    ↓ Emite nueva lista
+UI se actualiza automáticamente
 ```
 
 ## Sistema Multi-Usuario
 
-Cada entidad tiene un campo `userId` que almacena el identificador único de Auth0 (`auth0|...`).
+Cada entidad incluye un campo `userId` que almacena el identificador único de Auth0 (formato: `auth0|65a8f3c2d1e4b9a7...`).
 
-**Flujo de Autenticación:**
-1. Usuario hace login con Auth0
-2. `ViewModelAuth` recibe `result.user.getId()`
-3. Se guarda en SharedPreferences como `userId`
-4. `ViewModelAuth.estado` emite `EstadoAuth` con userId
-5. Todos los ViewModels filtran datos por este userId
-6. Al crear entidades, se asigna automáticamente el userId del usuario autenticado
+### Flujo de Autenticación
 
-**Aislamiento de Datos:**
+1. Usuario hace login con Auth0 (se abre navegador)
+2. Auth0 valida credenciales y devuelve objeto `Credentials`
+3. `ViewModelAuth` extrae `result.user.getId()` → userId
+4. Se guarda en SharedPreferences (clave: "auth_prefs")
+    - userId
+    - nombreUsuario
+    - emailUsuario
+5. `ViewModelAuth.estado` emite `EstadoAuth(autenticado = true, userId = "...")`
+6. Todos los ViewModels filtran datos por este userId
+7. Al crear nuevas entidades, se asigna automáticamente el userId del usuario autenticado
+
+### Aislamiento de Datos
+
 ```kotlin
+// Todas las queries filtran por userId
 @Query("SELECT * FROM medicamentos WHERE userId = :userId")
 fun getAllMedicamentos(userId: String): Flow<List<Medicamento>>
+
+// Al insertar, se incluye el userId
+val medicamento = Medicamento(
+    id = 0,
+    userId = estadoAuth.userId,  // Usuario actual
+    nombre = "Ibuprofeno",
+    // ...
+)
 ```
 
-## Persistencia de Sesión
+**Resultado**: Cada usuario solo ve sus propios medicamentos, citas, síntomas y doctores. Los datos están completamente aislados.
 
-Al hacer login:
-- Auth0 devuelve `Credentials` con información del usuario
-- Se extrae `userId`, `nombreUsuario` y `emailUsuario`
-- Se guarda en SharedPreferences con clave "auth_prefs"
+### Persistencia de Sesión
 
-Al abrir la app:
-- `MainActivity` llama a `viewModelAuth.cargarSesionGuardada(context)`
-- Si hay userId guardado, restaura el estado de autenticación
-- Navega automáticamente a Inicio si hay sesión válida
+**Al hacer login**:
+```kotlin
+val prefs = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
+prefs.edit().apply {
+    putString("userId", userId)
+    putString("nombreUsuario", result.user.name)
+    putString("emailUsuario", result.user.email)
+}.apply()
+```
 
-Al cerrar sesión:
-- Se limpia SharedPreferences
-- Se resetea el estado de ViewModelAuth
-- Se navega al Login
+**Al abrir la app**:
+```kotlin
+fun cargarSesionGuardada(context: Context) {
+    val prefs = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
+    val userId = prefs.getString("userId", "") ?: ""
+    if (userId.isNotBlank()) {
+        _estado.value = EstadoAuth(
+            autenticado = true,
+            userId = userId,
+            nombreUsuario = prefs.getString("nombreUsuario", null),
+            emailUsuario = prefs.getString("emailUsuario", null)
+        )
+    }
+}
+```
+
+**Al cerrar sesión**:
+```kotlin
+fun cerrarSesionLocal(context: Context) {
+    val prefs = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
+    prefs.edit().clear().apply()  // Borra todo
+    _estado.value = EstadoAuth(autenticado = false)
+}
+```
+
+**Ubicación del archivo**:
+```
+/data/data/com.guillermo.healthcare/shared_prefs/auth_prefs.xml
+```
+
+**Contenido del archivo**:
+```xml
+<?xml version='1.0' encoding='utf-8' standalone='yes' ?>
+<map>
+    <string name="userId">auth0|65a8f3c2d1e4b9a7f3c2d1e4</string>
+    <string name="nombreUsuario">Guillermo Sierra</string>
+    <string name="emailUsuario">guillermo@example.com</string>
+</map>
+```
+
+**IMPORTANTE sobre Seguridad**:
+- NO se guardan tokens de acceso (accessToken, idToken) por seguridad
+- Solo se guarda userId (identificador público)
+- Los tokens quedan en memoria y se pierden al cerrar la app
+- En producción, considera usar EncryptedSharedPreferences
 
 ## Validaciones
 
 ### Formularios
-- Campos obligatorios: nombre, dosis, frecuencia, fecha inicio (medicamentos)
-- Indicadores visuales de error con `isError` y `supportingText`
-- Prevención de envío si hay errores
 
-### Fechas
-- Fecha inicio de medicamento: permite fechas pasadas
-- Fecha fin de medicamento: solo desde hoy en adelante (validado con DatePicker.minDate)
-- Opción de fecha fin indefinida (checkbox que oculta el selector)
+Todos los formularios implementan validación en tiempo real:
 
-### Eliminación
-- Diálogos de confirmación antes de eliminar cualquier entidad
-- Muestra el nombre del elemento a eliminar
-
-## Manejo de Errores
-
-### API OpenFDA
 ```kotlin
-try {
-    val respuesta = api.buscarMedicamento(query, limit)
-    if (respuesta.isSuccessful && respuesta.body() != null) {
-        // Procesar resultados
-    } else if (respuesta.code() == 404) {
-        // No se encontraron resultados
-    } else {
-        // Error genérico
+var nombre by remember { mutableStateOf("") }
+var errorNombre by remember { mutableStateOf(false) }
+
+OutlinedTextField(
+    value = nombre,
+    onValueChange = { 
+        nombre = it
+        errorNombre = false  // Quita error al escribir
+    },
+    label = { Text("Nombre del medicamento *") },
+    isError = errorNombre,
+    supportingText = if (errorNombre) {
+        { Text("El nombre es obligatorio") }
+    } else null
+)
+
+Button(onClick = {
+    errorNombre = nombre.isBlank()
+    if (!errorNombre) {
+        // Guardar
     }
-} catch (e: Exception) {
-    // Error de red
+}) {
+    Text("Crear")
 }
 ```
 
-### Room Database
-Las operaciones de Room son transaccionales y lanzan excepciones en caso de error. Se capturan en los ViewModels.
+**Campos obligatorios**:
+- Medicamentos: nombre, dosis, frecuencia, fecha inicio
+- Citas: nombre doctor, especialidad, fecha, hora, lugar
+- Síntomas: nombre, intensidad, fecha, hora
+- Doctores: nombre, especialidad, teléfono, email
+
+### Fechas
+
+**DatePicker con restricciones**:
+
+```kotlin
+// Fecha inicio: permite fechas pasadas (medicamentos ya iniciados)
+val fechaInicioPickerState = rememberDatePickerState(
+    initialSelectedDateMillis = System.currentTimeMillis(),
+    selectableDates = object : SelectableDates {
+        override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+            return utcTimeMillis <= System.currentTimeMillis()  // Solo pasado y hoy
+        }
+    }
+)
+
+// Fecha fin: solo desde hoy en adelante
+val fechaFinPickerState = rememberDatePickerState(
+    initialSelectedDateMillis = System.currentTimeMillis(),
+    selectableDates = object : SelectableDates {
+        override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+            return utcTimeMillis >= System.currentTimeMillis()  // Solo futuro y hoy
+        }
+    }
+)
+```
+
+**Checkbox fecha indefinida**:
+```kotlin
+var fechaFinIndefinida by remember { mutableStateOf(false) }
+
+Row {
+    Checkbox(
+        checked = fechaFinIndefinida,
+        onCheckedChange = { 
+            fechaFinIndefinida = it
+            if (it) fechaFin = ""  // Limpia fecha si es indefinida
+        }
+    )
+    Text("Fecha fin indefinida")
+}
+
+// Campo de fecha solo visible si NO es indefinida
+if (!fechaFinIndefinida) {
+    OutlinedTextField(
+        value = fechaFin,
+        // ...
+    )
+}
+```
+
+### Eliminación
+
+Todos los delete operations incluyen diálogo de confirmación:
+
+```kotlin
+if (mostrarDialogoEliminar) {
+    AlertDialog(
+        title = { Text("Confirmar eliminación") },
+        text = { Text("¿Estás seguro de que deseas eliminar '${medicamento.nombre}'?") },
+        onDismissRequest = { mostrarDialogoEliminar = false },
+        confirmButton = {
+            TextButton(onClick = {
+                viewModel.eliminarMedicamento(medicamento)
+                navController.navigateUp()
+            }) {
+                Text("Eliminar", color = MaterialTheme.colorScheme.error)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = { mostrarDialogoEliminar = false }) {
+                Text("Cancelar")
+            }
+        }
+    )
+}
+```
 
 ## Dependencias Principales
 
 ```gradle
-// Jetpack Compose
-implementation("androidx.compose.ui:ui:1.6.0")
-implementation("androidx.compose.material3:material3:1.2.0")
-implementation("androidx.navigation:navigation-compose:2.7.6")
+dependencies {
+    // Jetpack Compose
+    implementation("androidx.compose.ui:ui:1.6.0")
+    implementation("androidx.compose.material3:material3:1.2.0")
+    implementation("androidx.compose.ui:ui-tooling-preview:1.6.0")
+    implementation("androidx.activity:activity-compose:1.8.2")
+    implementation("androidx.navigation:navigation-compose:2.7.6")
 
-// ViewModel
-implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
+    // ViewModel
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
 
-// Room
-implementation("androidx.room:room-runtime:2.6.1")
-implementation("androidx.room:room-ktx:2.6.1")
-ksp("androidx.room:room-compiler:2.6.1")
+    // Room
+    implementation("androidx.room:room-runtime:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+    ksp("androidx.room:room-compiler:2.6.1")
 
-// Retrofit
-implementation("com.squareup.retrofit2:retrofit:2.9.0")
-implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    // Retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
 
-// Auth0
-implementation("com.auth0.android:auth0:2.10.2")
+    // Auth0
+    implementation("com.auth0.android:auth0:2.10.2")
 
-// Hilt
-implementation("com.google.dagger:hilt-android:2.48")
-ksp("com.google.dagger:hilt-compiler:2.48")
-implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
+    // Hilt
+    implementation("com.google.dagger:hilt-android:2.48")
+    ksp("com.google.dagger:hilt-compiler:2.48")
+    implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
 
-// Coroutines
-implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    // Coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+
+    // Core
+    implementation("androidx.core:core-ktx:1.12.0")
+}
 ```
 
 ## Características Técnicas Destacadas
 
-### Arquitectura Limpia
-Separación clara entre capas de datos, dominio y presentación. Facilita testing y mantenimiento.
+### Arquitectura Limpia (Clean Architecture)
 
-### Inyección de Dependencias
-Hilt proporciona instancias únicas de DAOs, Repositorios y UseCases. ViewModels se crean con `@HiltViewModel`.
+- **Separación de capas**: data, domain, ui
+- **Independencia**: Cada capa solo conoce la inferior
+- **Testabilidad**: Fácil de testear cada capa por separado
+- **Mantenibilidad**: Cambios aislados sin afectar otras capas
 
-### Programación Reactiva
-Uso de Flow y StateFlow para propagación automática de cambios desde la base de datos hasta la UI.
+### Inyección de Dependencias con Hilt
 
-### Navegación Tipo Seguro
-Sealed class `Pantalla` con funciones que generan rutas correctamente, evitando errores de strings.
+```kotlin
+// ViewModels
+@HiltViewModel
+class ViewModelMedicamento @Inject constructor(
+    private val obtenerMedicamentosUseCase: ObtenerMedicamentosUseCase,
+    private val insertarMedicamentoUseCase: InsertarMedicamentoUseCase,
+    // ...
+) : ViewModel()
+
+// Provisión de dependencias
+@Module
+@InstallIn(SingletonComponent::class)
+object ModuloBaseDatos {
+    @Provides
+    @Singleton
+    fun provideDatabase(@ApplicationContext context: Context): BaseDatosSalud {
+        return Room.databaseBuilder(
+            context,
+            BaseDatosSalud::class.java,
+            "healthcare_database"
+        ).addMigrations(BaseDatosSalud.MIGRATION_1_2).build()
+    }
+}
+```
+
+### Programación Reactiva con Flow
+
+```kotlin
+// DAO emite Flow
+@Query("SELECT * FROM medicamentos WHERE userId = :userId")
+fun getAllMedicamentos(userId: String): Flow<List<Medicamento>>
+
+// ViewModel recoge el Flow
+fun cargarMedicamentos(userId: String) {
+    viewModelScope.launch {
+        obtenerMedicamentosUseCase(userId).collect { lista ->
+            _medicamentos.value = lista  // Actualiza StateFlow
+        }
+    }
+}
+
+// UI observa el StateFlow
+val medicamentos by viewModel.medicamentos.collectAsState()
+
+// Beneficio: Cuando Room inserta/actualiza/elimina un medicamento,
+// el Flow detecta el cambio automáticamente y emite la lista actualizada.
+// La UI se recompone sola sin necesidad de recargar manualmente.
+```
+
+### Navegación Tipo-Segura
+
+```kotlin
+sealed class Pantalla(val ruta: String) {
+    object Login : Pantalla("login")
+    object Inicio : Pantalla("inicio")
+    
+    object FormularioMedicamento : Pantalla(
+        "formulario_medicamento?medicamentoId={medicamentoId}&nombre={nombre}"
+    ) {
+        fun crearRuta(medicamentoId: Int? = null, nombre: String? = null): String {
+            var ruta = if (medicamentoId != null) {
+                "formulario_medicamento?medicamentoId=$medicamentoId"
+            } else {
+                "formulario_medicamento"
+            }
+            if (nombre != null) {
+                ruta += if (medicamentoId != null) "&nombre=$nombre" else "?nombre=$nombre"
+            }
+            return ruta
+        }
+    }
+}
+
+// Uso:
+navController.navigate(Pantalla.FormularioMedicamento.crearRuta(nombre = "Ibuprofeno"))
+```
+
+**Beneficios**:
+- Errores de compilación si cambias rutas
+- Autocompletado en el IDE
+- Refactorización segura
 
 ### ViewModelAuth Compartido
-Una única instancia de ViewModelAuth se crea en MainActivity y se propaga a todas las pantallas vía GrafoNavegacion, asegurando consistencia del estado de autenticación.
 
-### Composables Reutilizables
-`FilaDetalle` se usa en todas las pantallas de detalle, manteniendo consistencia visual.
+```kotlin
+@Composable
+fun GrafoNavegacion(navController: NavHostController) {
+    // UNA SOLA instancia de ViewModelAuth
+    val viewModelAuth: ViewModelAuth = hiltViewModel(
+        LocalContext.current as ComponentActivity
+    )
+    
+    NavHost(navController, startDestination = Pantalla.Login.ruta) {
+        composable(Pantalla.Login.ruta) {
+            PantallaLogin(navController, viewModelAuth)  // Mismo ViewModel
+        }
+        composable(Pantalla.Inicio.ruta) {
+            PantallaInicio(navController, viewModelAuth)  // Mismo ViewModel
+        }
+        // Todas las pantallas reciben la MISMA instancia
+    }
+}
+```
 
-### DatePickers Nativos
-Uso de DatePickerDialog de Android para selección de fechas con restricciones específicas.
+**Beneficio**: Estado de autenticación consistente en toda la app. No se pierde userId al navegar entre pantallas.
 
-## Mejoras Futuras
+### Componentes Reutilizables
 
-- Notificaciones para recordatorios de medicación
-- Gráficos de evolución de síntomas
+```kotlin
+@Composable
+fun FilaDetalle(etiqueta: String, valor: String) {
+    Column {
+        Text(
+            text = etiqueta,
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Spacer(modifier = Modifier.height(2.dp))
+        Text(
+            text = valor,
+            style = MaterialTheme.typography.bodyLarge
+        )
+    }
+}
+
+// Uso en múltiples pantallas:
+FilaDetalle("Dosis", medicamento.dosis)
+FilaDetalle("Frecuencia", medicamento.frecuencia)
+FilaDetalle("Fecha Inicio", medicamento.fechaInicio)
+```
+
+**Beneficio**: Consistencia visual y menos código duplicado.
+
+## Problemas Conocidos y Limitaciones
+
+### OpenFDA API
+
+- Puede devolver 404 si el medicamento no existe en la base de datos de la FDA
+- No todos los medicamentos tienen información de etiqueta completa
+- Limitado a medicamentos aprobados por la FDA (principalmente USA)
+
+### Auth0
+
+- Requiere conexión a internet para autenticación inicial
+- La sesión se mantiene localmente pero no sincroniza automáticamente con Auth0
+- Al cambiar de dispositivo, el usuario debe hacer login de nuevo
+
+### Base de Datos
+
+- No hay sincronización en la nube (datos solo locales)
+- Si se desinstala la app, se pierden todos los datos
+- No hay sistema de backup automático
+
+### Database Inspector
+
+- Solo funciona en versión debug
+- No funciona con APK release firmado
+- Requiere dispositivo/emulador con USB debugging activado
+
+## Mejoras Futuras Planificadas
+
+- Notificaciones push para recordatorios de medicación
+- Gráficos de evolución de síntomas con MPAndroidChart
 - Exportación de datos a PDF
-- Sincronización en la nube
+- Sincronización en la nube con Firebase
 - Widget de homescreen con próximas citas
 - Integración con Google Calendar
-- Modo offline completo para búsqueda (caché de OpenFDA)
-- Biometría para acceso rápido
+- Modo offline completo con caché de OpenFDA
+- Autenticación biométrica (huella/face ID)
+- Tests unitarios de ViewModels
+- Tests de integración de Room
+- Tests de UI con Compose Testing
+- CI/CD con GitHub Actions
 
-## Problemas Conocidos
+## Control de Versiones
 
-- La búsqueda de OpenFDA puede devolver 404 si el medicamento no existe en la base de datos de la FDA
-- Auth0 requiere conexión a internet para autenticación inicial
-- La sesión se mantiene localmente pero no sincroniza con Auth0 al cerrar/abrir app
-
-## Licencia
-
-Este proyecto es parte de un trabajo académico del ciclo de Desarrollo de Aplicaciones Multiplataforma.
+**Estadísticas del repositorio**:
+- Total de commits: 45+
+- Branches: main
+- Fecha entrega: 22/02/2026
 
 ## Autor
 
-Guillermo Sierra Castejón
-Proyecto Final Asignaturas PSP y PMDM - Curso 2025/2026
+**Guillermo Sierra Castejón**  
+Proyecto Final Asignaturas PSP y PMDM  
+Curso 2025/2026  
+IES Isidra de Guzmán
 
 ## Contacto
 
-Para dudas o sugerencias:
-- Email: sierracastejong@gmail.com
-- GitHub: GuillermoSierra
+- **Email**: sierracastejong@gmail.com
+- **GitHub**: [GuillermoSierra](https://github.com/GuillermoSierra)
+- **Repositorio**: [ProyectoPSPyPMPDM](https://github.com/GuillermoSierra/ProyectoPSPyPMPDM)
